@@ -1,0 +1,76 @@
+# kubernetes/projetojumpad-deployment.yaml
+# ---
+# Template de Deployment Kubernetes para a API projetojumpad (ESBOÇO - NÃO FUNCIONAL)
+# Este arquivo é um template base e NÃO ESTÁ FUNCIONAL. Requer ajustes e validação.
+# É um ponto de partida para a implementação final do Deployment Kubernetes.
+# Utiliza um InitContainer (ESBOÇO - NÃO PRODUÇÃO) para clonar o repositório GitHub.
+# Requer o Secret 'deploykey' (deploykey-secret.yaml) para acesso ao repositório privado.
+# Criado por: Elias Andrade - Maringá Paraná - 10/03/2025
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projetojumpad-deployment
+  labels:
+    app: projetojumpad
+spec:
+  replicas: 1 # Número de réplicas iniciais - Ajuste conforme a carga e disponibilidade desejada
+  selector:
+    matchLabels:
+      app: projetojumpad
+  template:
+    metadata:
+      labels:
+        app: projetojumpad
+    spec:
+      # *** VOLUMES ***
+      volumes:
+        - name: deploy-key-volume
+          secret:
+            secretName: deploykey # Nome do Secret que contém a chave SSH - Deve existir no namespace
+            defaultMode: 0400 # Permissões restritas para a chave SSH (somente leitura para o proprietário)
+        - name: app-volume
+          emptyDir: {} # Volume vazio para compartilhar código entre initContainer e container principal
+
+      # *** INIT CONTAINERS (ESBOÇO - NÃO PRODUÇÃO) ***
+      initContainers:
+        - name: git-clone
+          image: alpine/git:latest # Imagem Alpine com Git - leve e eficiente
+          volumeMounts:
+            - name: deploy-key-volume
+              mountPath: /root/.ssh # Monta a chave SSH no diretório .ssh do usuário root
+            - name: app-volume
+              mountPath: /app # Monta o volume para o código da aplicação
+          command:
+            - /bin/sh
+          args:
+            - |
+              mkdir -p /app && cd /app
+              chmod 400 /root/.ssh/ssh-privatekey # Garante permissões corretas para a chave SSH (leitura restrita)
+              ssh-keyscan github.com >> /root/.ssh/known_hosts # Adiciona github.com à lista de hosts conhecidos (evita aviso de host desconhecido)
+              git clone --depth 1 -b main git@github.com:chaos4455/projetojumpad.git . # Clona o repositório (branch 'main')
+              # *** IMPORTANTE: REMOVER INIT CONTAINER EM PRODUÇÃO E USAR IMAGEM PRÉ-BUILDADA DO DOCKER HUB ***
+              echo "Clonagem do repositório GitHub concluída (InitContainer - ESBOÇO). Em produção, use imagem Docker pré-construída."
+
+      # *** CONTAINERS PRINCIPAIS ***
+      containers:
+        - name: projetojumpad-api
+          # *** EM PRODUÇÃO, USAR IMAGEM DO DOCKER HUB AQUI: ***
+          # image: dockerhub/chaos4455/projetojumpad
+          # *** POR ENQUANTO, USANDO IMAGEM BASE E CONFIGURANDO NO CONTAINER (ESBOÇO): ***
+          image: ubuntu:22.04
+          ports:
+            - containerPort: 8882 # Porta que a API expõe dentro do container - Deve corresponder ao targetPort do Service
+          workingDir: /app # Define o diretório de trabalho dentro do container
+          command: ["/app/run-api.sh"] # Comando para iniciar a API - Usa o script configurado no ConfigMap (projetojumpad-configmap.yaml)
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app # Monta o volume com o código da aplicação
+          securityContext:
+            runAsUser: 1000 # ID do usuário 'server' - Ajuste se necessário para corresponder ao UID do usuário 'server' no container
+            runAsGroup: 1000 # ID do grupo 'server' - Ajuste se necessário para corresponder ao GID do grupo 'server' no container
+
+      # *** VOLUMES (REPETIÇÃO - JÁ DEFINIDO ACIMA, MANTER PARA CLAREZA) ***
+      volumes:
+        - name: app-volume # Volume vazio para compartilhar o código entre initContainer e container principal
+          emptyDir: {}

@@ -1,0 +1,29 @@
+# kubernetes/projetojumpad-configmap.yaml
+# ---
+# Template de ConfigMap Kubernetes para script de inicialização da API projetojumpad (ESBOÇO - NÃO FUNCIONAL)
+# Este arquivo é um template base e NÃO ESTÁ FUNCIONAL. Requer ajustes e validação.
+# É um ponto de partida para a implementação final do ConfigMap Kubernetes.
+# Contém o script 'run-api.sh' que será executado no container para iniciar a API.
+# *** IMPORTANTE: EM PRODUÇÃO, ESTE CONFIGMAP E O SCRIPT SERÃO DESNECESSÁRIOS AO USAR IMAGEM DOCKER PRÉ-BUILDADA ***
+# Criado por: Elias Andrade - Maringá Paraná - 10/03/2025
+# ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: projetojumpad-api-startup-script
+data:
+  run-api.sh: |
+    #!/bin/bash
+    set -e # Sai imediatamente se algum comando falhar
+    cd /app
+    # *** INSTALAÇÃO DO PYTHON E DEPENDÊNCIAS - APENAS PARA ESBOÇO - REMOVER EM PRODUÇÃO ***
+    apt-get update && apt-get install -y python3.11 python3.11-venv python3-pip
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+    python3.11 -m venv venv
+    source /app/venv/bin/activate
+    pip install --no-cache-dir -r requirements.txt
+    # *** FIM DA INSTALAÇÃO - REMOVER EM PRODUÇÃO ***
+
+    # *** INICIAR A API (UVICORN) - AJUSTAR CAMINHOS DOS CERTIFICADOS SE NECESSÁRIO ***
+    /app/venv/bin/uvicorn app.API-main-server-prod:app --host 0.0.0.0 --port 8882 --ssl-certfile /app/credentials/certificado.pem --ssl-keyfile /app/credentials/chave.pem
+    # *** AJUSTAR O COMANDO UVICORN CONFORME NECESSÁRIO (EX: VARIÁVEIS DE AMBIENTE, LOGGING) ***

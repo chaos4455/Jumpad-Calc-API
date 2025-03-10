@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-jose[cryptography]  
+cryptography              
+requests
+pytest
+colorama
+python-dotenv             
+pydantic                  
+inquirer

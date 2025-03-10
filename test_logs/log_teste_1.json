@@ -1,0 +1,204 @@
+{
+    "timestamp_execucao_teste": "2025-03-09T23:59:47.447675",
+    "resultados_teste": [
+        {
+            "nome_teste": "soma_inteiros_validos",
+            "entrada": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "saida_esperada": 10,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_strings_numericas_validas",
+            "entrada": [
+                "5",
+                "10",
+                "15"
+            ],
+            "saida_esperada": 30,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_lista_vazia",
+            "entrada": [],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de soma: A lista de números não pode estar vazia.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_tipo_invalido_string",
+            "entrada": "nao_eh_lista",
+            "saida_esperada": null,
+            "excecao_esperada": "TypeError",
+            "excecao_real": "TypeError",
+            "mensagem_excecao": "Erro de tipo na operação de soma: A entrada deve ser uma lista, mas foi fornecido 'str'.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_lista_com_string",
+            "entrada": [
+                1,
+                2,
+                "a",
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de soma: Elemento na posição 3 ('a') não é um inteiro válido e não pode ser convertido para inteiro.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_lista_com_float_sem_perda",
+            "entrada": [
+                1,
+                2,
+                3.0,
+                4
+            ],
+            "saida_esperada": 10,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_lista_com_float_com_perda",
+            "entrada": [
+                1,
+                2,
+                3.5,
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de soma: Elemento na posição 3 ('3.5') não é um inteiro válido e não pode ser convertido para inteiro.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "soma_lista_com_none",
+            "entrada": [
+                1,
+                2,
+                null,
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de soma: Elemento na posição 3 não pode ser None.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_inteiros_validos",
+            "entrada": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "saida_esperada": 2.5,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_strings_numericas_validas",
+            "entrada": [
+                "5",
+                "10",
+                "15"
+            ],
+            "saida_esperada": 10.0,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_lista_vazia",
+            "entrada": [],
+            "saida_esperada": null,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_tipo_invalido_string",
+            "entrada": "nao_eh_lista",
+            "saida_esperada": null,
+            "excecao_esperada": "TypeError",
+            "excecao_real": "TypeError",
+            "mensagem_excecao": "Erro de tipo na operação de média: A entrada deve ser uma lista, mas foi fornecido 'str'.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_lista_com_string",
+            "entrada": [
+                1,
+                2,
+                "a",
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de média: Elemento na posição 3 ('a') não é um inteiro válido e não pode ser convertido para inteiro.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_lista_com_float_sem_perda",
+            "entrada": [
+                1,
+                2,
+                3.0,
+                4
+            ],
+            "saida_esperada": 2.5,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_lista_com_float_com_perda",
+            "entrada": [
+                1,
+                2,
+                3.5,
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de média: Elemento na posição 3 ('3.5') não é um inteiro válido e não pode ser convertido para inteiro.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_lista_com_none",
+            "entrada": [
+                1,
+                2,
+                null,
+                4
+            ],
+            "saida_esperada": null,
+            "excecao_esperada": "ValueError",
+            "excecao_real": "ValueError",
+            "mensagem_excecao": "Erro de valor na operação de média: Elemento na posição 3 não pode ser None.",
+            "status_teste": "PASSOU"
+        },
+        {
+            "nome_teste": "media_divisao_por_zero",
+            "entrada": [
+                0,
+                0,
+                0
+            ],
+            "saida_esperada": 0.0,
+            "excecao_esperada": null,
+            "status_teste": "PASSOU"
+        }
+    ]
+}

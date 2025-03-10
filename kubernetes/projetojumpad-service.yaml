@@ -1,0 +1,21 @@
+# kubernetes/projetojumpad-service.yaml
+# ---
+# Template de Serviço Kubernetes para a API projetojumpad (ESBOÇO - NÃO FUNCIONAL)
+# Este arquivo é um template base e NÃO ESTÁ FUNCIONAL. Requer ajustes e validação.
+# É um ponto de partida para a implementação final do Serviço Kubernetes.
+# Criado por: Elias Andrade - Maringá Paraná - 10/03/2025
+# ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: projetojumpad-service
+spec:
+  selector:
+    app: projetojumpad
+  ports:
+    - protocol: TCP
+      port: 80 # Porta do serviço Kubernetes (acesso interno no cluster) - Ajuste se necessário
+      targetPort: 8882 # Porta do container (porta da API) - Deve corresponder à porta exposta no container
+  type: ClusterIP # Tipo de serviço: ClusterIP (interno) - Mudar para LoadBalancer ou NodePort para acesso externo
+  # type: LoadBalancer # Para expor a API externamente com LoadBalancer (provedor de cloud)
+  # type: NodePort    # Para expor a API em cada nó do Kubernetes (NodePort)

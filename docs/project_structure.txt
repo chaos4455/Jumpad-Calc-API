@@ -1,0 +1,48 @@
+DOCUMENTAÇÃO AUTOMÁTICA DA ESTRUTURA DO PROJETO
+---------------------------------------------------
+Gerado por: doc_gen.py
+Data de Geração: 10/03/2025 00:32:43
+Codificação do Arquivo: UTF-8
+
+Estrutura de diretórios e arquivos a partir da raiz do projeto:
+
+./
+  .gitignore
+  CHANGELOG.md
+  Dockerfile
+  doc_gen_full.py
+  README.md
+  requirements.txt
+  app/
+    API-main-server-mvp.py
+    API-main-server-prod.py
+  bibliotecas/
+    calc_numbers.py
+    __pycache__/
+      calc_numbers.cpython-310.pyc
+  config/
+  credentials/
+    admin_credentials.json
+    certificado.pem
+    chave.pem
+    tester_credentials.json
+  docs/
+    project_structure.txt
+  exceptions/
+  logs/
+    api-detailed-logs.json
+    api-logs.json
+  schemas/
+  tests/
+    api_main_tester_v1.py
+    api_main_tester_v2.py.py
+    test_lib_calc_numbers.py
+  test_logs/
+    log_teste_1.json
+
+---------------------------------------------------
+Fim da Documentação da Estrutura do Projeto.
+
+Este arquivo foi gerado automaticamente. Para atualizar a documentação,
+execute o script novamente: 'python doc_gen.py'
+Certifique-se de que seu editor de texto/visualizador utilize UTF-8 para exibir corretamente os caracteres.

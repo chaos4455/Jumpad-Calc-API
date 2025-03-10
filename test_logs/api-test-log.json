@@ -1,0 +1,765 @@
+{"test_runs": [
+{
+    "test_run_timestamp": "2025-03-10T00:49:42.995320",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_input_nao_lista_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0450",
+    "timestamp": "2025-03-10T00:49:42.995320",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": "string"
+                },
+                "json": {
+                    "numeros": "string"
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:42 GMT",
+                    "server": "uvicorn",
+                    "content-length": "112",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"list_type\",\"loc\":[\"body\",\"numeros\"],\"msg\":\"Input should be a valid list\",\"input\":\"string\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:45.057455",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_com_float_como_string_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0541",
+    "timestamp": "2025-03-10T00:49:45.057455",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "2.5",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "2.5",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:44 GMT",
+                    "server": "uvicorn",
+                    "content-length": "154",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_parsing\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer, unable to parse string as an integer\",\"input\":\"2.5\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:47.102453",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_com_float_int_string_ok",
+    "status": "FALHOU",
+    "duration_seconds": "2.0430",
+    "timestamp": "2025-03-10T00:49:47.102453",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2.0,
+                        "3",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2.0,
+                        "3",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:47 GMT",
+                    "server": "uvicorn",
+                    "content-length": "129",
+                    "content-type": "application/json"
+                },
+                "body": "{\"media\":2.5,\"mensagem\":\"Operação de média bem-sucedida\",\"numeros_entrada\":[1,2,3,4],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:49.164455",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_com_nao_inteiros_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0600",
+    "timestamp": "2025-03-10T00:49:49.164455",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "a",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "a",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:48 GMT",
+                    "server": "uvicorn",
+                    "content-length": "152",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_parsing\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer, unable to parse string as an integer\",\"input\":\"a\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:52.147656",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_com_none_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0522",
+    "timestamp": "2025-03-10T00:49:52.147656",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        null,
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        null,
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:51 GMT",
+                    "server": "uvicorn",
+                    "content-length": "112",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_type\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer\",\"input\":null}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:54.218656",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_com_string_int_ok",
+    "status": "FALHOU",
+    "duration_seconds": "2.0690",
+    "timestamp": "2025-03-10T00:49:54.218656",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "3",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "3",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:53 GMT",
+                    "server": "uvicorn",
+                    "content-length": "129",
+                    "content-type": "application/json"
+                },
+                "body": "{\"media\":2.5,\"mensagem\":\"Operação de média bem-sucedida\",\"numeros_entrada\":[1,2,3,4],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:56.266383",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_lista_vazia_retorna_none",
+    "status": "FALHOU",
+    "duration_seconds": "2.0417",
+    "timestamp": "2025-03-10T00:49:56.265382",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": []
+                },
+                "json": {
+                    "numeros": []
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:56 GMT",
+                    "server": "uvicorn",
+                    "content-length": "140",
+                    "content-type": "application/json"
+                },
+                "body": "{\"media\":null,\"mensagem\":\"Operação de média bem-sucedida para lista vazia\",\"numeros_entrada\":[],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:49:58.311493",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_calcular_media_numeros_positivos",
+    "status": "FALHOU",
+    "duration_seconds": "2.0431",
+    "timestamp": "2025-03-10T00:49:58.311493",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/calcular_media",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:49:57 GMT",
+                    "server": "uvicorn",
+                    "content-length": "131",
+                    "content-type": "application/json"
+                },
+                "body": "{\"media\":3.0,\"mensagem\":\"Operação de média bem-sucedida\",\"numeros_entrada\":[1,2,3,4,5],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:02.433493",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_input_nao_lista_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0600",
+    "timestamp": "2025-03-10T00:50:02.433493",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": "string"
+                },
+                "json": {
+                    "numeros": "string"
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:01 GMT",
+                    "server": "uvicorn",
+                    "content-length": "112",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"list_type\",\"loc\":[\"body\",\"numeros\"],\"msg\":\"Input should be a valid list\",\"input\":\"string\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:04.501496",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_com_float_como_string_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0660",
+    "timestamp": "2025-03-10T00:50:04.501496",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "2.5",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "2.5",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:04 GMT",
+                    "server": "uvicorn",
+                    "content-length": "154",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_parsing\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer, unable to parse string as an integer\",\"input\":\"2.5\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:06.560492",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_com_float_int_string_ok",
+    "status": "FALHOU",
+    "duration_seconds": "2.0560",
+    "timestamp": "2025-03-10T00:50:06.559491",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2.0,
+                        "3",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2.0,
+                        "3",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:06 GMT",
+                    "server": "uvicorn",
+                    "content-length": "130",
+                    "content-type": "application/json"
+                },
+                "body": "{\"resultado\":10,\"mensagem\":\"Operação de soma bem-sucedida\",\"numeros_entrada\":[1,2,3,4],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:08.618150",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_com_nao_inteiros_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0557",
+    "timestamp": "2025-03-10T00:50:08.618150",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "a",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "a",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:08 GMT",
+                    "server": "uvicorn",
+                    "content-length": "152",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_parsing\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer, unable to parse string as an integer\",\"input\":\"a\"}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:10.703484",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_com_none_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0823",
+    "timestamp": "2025-03-10T00:50:10.703484",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        null,
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        null,
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:09 GMT",
+                    "server": "uvicorn",
+                    "content-length": "112",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":[{\"type\":\"int_type\",\"loc\":[\"body\",\"numeros\",2],\"msg\":\"Input should be a valid integer\",\"input\":null}]}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:12.834996",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_com_string_int_ok",
+    "status": "FALHOU",
+    "duration_seconds": "2.0855",
+    "timestamp": "2025-03-10T00:50:12.834996",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        "3",
+                        4
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        "3",
+                        4
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:11 GMT",
+                    "server": "uvicorn",
+                    "content-length": "130",
+                    "content-type": "application/json"
+                },
+                "body": "{\"resultado\":10,\"mensagem\":\"Operação de soma bem-sucedida\",\"numeros_entrada\":[1,2,3,4],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:14.890997",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_lista_vazia_erro_422",
+    "status": "FALHOU",
+    "duration_seconds": "2.0530",
+    "timestamp": "2025-03-10T00:50:14.890997",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": []
+                },
+                "json": {
+                    "numeros": []
+                }
+            },
+            "response": {
+                "status_code": 422,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:14 GMT",
+                    "server": "uvicorn",
+                    "content-length": "92",
+                    "content-type": "application/json"
+                },
+                "body": "{\"detail\":\"Erro de valor na operação de soma: A lista de números não pode estar vazia.\"}"
+            }
+        }
+    ]
+}
+]
+},
+{
+    "test_run_timestamp": "2025-03-10T00:50:16.951993",
+    "test_suite": "ApiTests"
+},
+"tests": [
+{
+    "test_name": "test_rota_somar_numeros_positivos",
+    "status": "FALHOU",
+    "duration_seconds": "2.0580",
+    "timestamp": "2025-03-10T00:50:16.951993",
+    "details": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://localhost:8882/somar",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5pdmVsX2FjZXNzbyI6ImFkbWluIiwiZXhwIjoxNzQxNTgwMzgwfQ.XiPl_vrbgkpnRychBlymGAMY956eAEPLPNrLkbeHEBM"
+                },
+                "data": {
+                    "numeros": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
+                "json": {
+                    "numeros": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                }
+            },
+            "response": {
+                "status_code": 200,
+                "headers": {
+                    "date": "Mon, 10 Mar 2025 03:50:16 GMT",
+                    "server": "uvicorn",
+                    "content-length": "132",
+                    "content-type": "application/json"
+                },
+                "body": "{\"resultado\":15,\"mensagem\":\"Operação de soma bem-sucedida\",\"numeros_entrada\":[1,2,3,4,5],\"usuario\":\"admin\",\"nivel_acesso\":\"admin\"}"
+            }
+        }
+    ]
+}
+]
+}

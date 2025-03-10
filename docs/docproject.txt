@@ -1,0 +1,2766 @@
+# Documentação do Projeto
+
+Este documento foi gerado automaticamente pelo script `documentador_projeto.py`.
+
+Data de Geração: 2025-03-10 00:32:48
+Diretório Raiz: D:\projeto jumpad
+
+================================================================================
+
+📂 Pasta: .\app
+
+📂 Pasta: .\bibliotecas
+
+📂 Pasta: .\config
+
+📂 Pasta: .\credentials
+
+📂 Pasta: .\docs
+
+📂 Pasta: .\exceptions
+
+📂 Pasta: .\logs
+
+📂 Pasta: .\schemas
+
+📂 Pasta: .\tests
+
+📂 Pasta: .\test_logs
+
+📄 Arquivo: .\.gitignore
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  Número de Linhas: 0
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\CHANGELOG.md
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  Número de Linhas: 0
+
+  Código Fonte:
+
+📄 Arquivo: .\Dockerfile
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  Número de Linhas: 0
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\doc_gen.py
+  Tamanho: 0.00 MB (2.06 KB, 2108 bytes)
+  Número de Linhas: 42
+
+  Código Fonte:
+import os
+import datetime
+
+def document_project_structure(start_path="."):
+    docs_dir = os.path.join(start_path, "docs")
+    doc_file_path = os.path.join(docs_dir, "project_structure.txt")
+
+    if not os.path.exists(docs_dir):
+        os.makedirs(docs_dir)
+        print(f"Diretório 'docs/' criado.")
+
+    with open(doc_file_path, 'w', encoding='utf-8') as doc_file:
+        doc_file.write("DOCUMENTAÇÃO AUTOMÁTICA DA ESTRUTURA DO PROJETO\n")
+        doc_file.write("---------------------------------------------------\n")
+        doc_file.write(f"Gerado por: {os.path.basename(__file__)}\n")
+        doc_file.write("Data de Geração: {:%d/%m/%Y %H:%M:%S}\n".format(datetime.datetime.now()))
+        doc_file.write("Codificação do Arquivo: UTF-8\n")
+        doc_file.write("\nEstrutura de diretórios e arquivos a partir da raiz do projeto:\n\n")
+
+        for root, dirs, files in os.walk(start_path):
+            depth = root.replace(start_path, '').count(os.sep)
+            indent = '  ' * depth
+            doc_file.write(f"{indent}{os.path.basename(root)}/\n")
+
+            sub_indent = '  ' * (depth + 1)
+            for filename in files:
+                if filename != os.path.basename(__file__):
+                    doc_file.write(f"{sub_indent}{filename}\n")
+
+        doc_file.write("\n---------------------------------------------------\n")
+        doc_file.write("Fim da Documentação da Estrutura do Projeto.\n")
+        doc_file.write("\nEste arquivo foi gerado automaticamente. Para atualizar a documentação,\n")
+        doc_file.write("execute o script novamente: 'python {}'\n".format(os.path.basename(__file__)))
+        doc_file.write("Certifique-se de que seu editor de texto/visualizador utilize UTF-8 para exibir corretamente os caracteres.\n")
+
+    print(f"\nDocumentação da estrutura do projeto gerada com sucesso em: '{doc_file_path}' (Codificação: UTF-8)")
+
+
+if __name__ == "__main__":
+    print("Gerando documentação da estrutura do projeto (UTF-8)...")
+    document_project_structure()
+    print("\nProcesso concluído.")
+📄 Arquivo: .\doc_gen_full.py
+  Tamanho: 0.01 MB (8.60 KB, 8805 bytes)
+  Número de Linhas: 192
+
+  Código Fonte:
+import os
+import sqlite3
+import chardet
+import datetime
+
+# Define o nome da pasta 'docs' e o caminho completo para o arquivo de sa√≠da
+DOCS_FOLDER = "docs"
+OUTPUT_FILE = os.path.join(DOCS_FOLDER, "docproject.txt")
+SAMPLE_SIZE = 3
+LARGE_TABLE_THRESHOLD = 100
+
+def detect_encoding(filepath):
+    try:
+        with open(filepath, 'rb') as f:
+            rawdata = f.read()
+            result = chardet.detect(rawdata)
+            return result['encoding']
+    except Exception:
+        return 'utf-8'
+
+def get_file_info(filepath):
+    size_bytes = os.path.getsize(filepath)
+    size_kb = size_bytes / 1024
+    size_mb = size_kb / 1024
+
+    line_count = 0
+    try:
+        encoding = detect_encoding(filepath)
+        with open(filepath, 'r', encoding=encoding, errors='ignore') as f:
+            for line in f:
+                line_count += 1
+    except Exception as e:
+        print(f"Aviso: Erro ao contar linhas de '{filepath}': {e}")
+        line_count = -1
+
+    return {
+        "tamanho_bytes": size_bytes,
+        "tamanho_kb": f"{size_kb:.2f}",
+        "tamanho_mb": f"{size_mb:.2f}",
+        "numero_linhas": line_count
+    }
+
+def get_file_content_bruto(filepath):
+    try:
+        encoding = detect_encoding(filepath)
+        with open(filepath, 'r', encoding=encoding, errors='ignore') as f:
+            return f.read()
+    except Exception as e:
+        print(f"Aviso: Erro ao ler conte√∫do de '{filepath}': {e}")
+        return "[ERRO AO LER CONTE√öDO]"
+
+def analyze_sqlite_db(filepath, doc_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(filepath)
+        cursor = conn.cursor()
+
+        doc_file.write("\n" + "="*80 + "\n")
+        doc_file.write(f"  üíæ Banco de Dados SQLite: {filepath}\n")
+        doc_file.write("="*80 + "\n")
+
+        db_size_bytes = os.path.getsize(filepath)
+        db_size_kb = db_size_bytes / 1024
+        db_size_mb = db_size_kb / 1024
+
+        doc_file.write(f"  Tamanho: {db_size_mb:.2f} MB ({db_size_kb:.2f} KB, {db_size_bytes} bytes)\n")
+
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        if tables:
+            doc_file.write(f"\n  Tabelas:\n")
+            for table_name_tuple in tables:
+                table_name = table_name_tuple[0]
+                doc_file.write(f"\n    üóÇÔ∏è Tabela: {table_name}\n")
+
+                cursor.execute(f"PRAGMA table_info('{table_name}')")
+                columns_info = cursor.fetchall()
+                if columns_info:
+                    doc_file.write(f"    Colunas:\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+                    doc_file.write(f"    | {'ID':<4} | {'Nome':<20} | {'Tipo':<15} | {'N√£o Nulo?':<10} | {'Padr√£o':<10} | {'PK':<3} |\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+
+                    for col_info in columns_info:
+                        cid, name, type_str, notnull, dflt_value, pk = col_info
+                        doc_file.write(f"    | {cid:<4} | {name:<20} | {type_str:<15} | {'Sim' if notnull else 'N√£o':<10} | {str(dflt_value):<10} | {'Sim' if pk else 'N√£o':<3} |\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+
+
+                cursor.execute(f"SELECT COUNT(*) FROM '{table_name}'")
+                row_count = cursor.fetchone()[0]
+                doc_file.write(f"    N√∫mero de Registros: {row_count}\n")
+
+                if row_count > 0:
+                    doc_file.write(f"    Amostra de Dados:\n")
+
+                    doc_file.write(f"      Topo ({SAMPLE_SIZE} registros):\n")
+                    cursor.execute(f"SELECT * FROM '{table_name}' LIMIT {SAMPLE_SIZE}")
+                    top_rows = cursor.fetchall()
+                    if top_rows:
+                        header_row = [col_info[1] for col_info in columns_info]
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+                        for row in top_rows:
+                            doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+
+                    doc_file.write(f"      Fundo ({SAMPLE_SIZE} registros):\n")
+                    cursor.execute(f"SELECT * FROM '{table_name}' ORDER BY ROWID DESC LIMIT {SAMPLE_SIZE}")
+                    bottom_rows = cursor.fetchall()
+                    if bottom_rows:
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        for row in bottom_rows:
+                            doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+                    if row_count > LARGE_TABLE_THRESHOLD:
+                        doc_file.write(f"      Meio ({SAMPLE_SIZE} registros):\n")
+                        offset = row_count // 2 - (SAMPLE_SIZE // 2) if row_count > SAMPLE_SIZE else 0
+                        if offset < 0: offset = 0
+                        cursor.execute(f"SELECT * FROM '{table_name}' LIMIT {SAMPLE_SIZE} OFFSET {offset}")
+                        middle_rows = cursor.fetchall()
+                        if middle_rows:
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                            doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                            for row in middle_rows:
+                                doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+
+        else:
+            doc_file.write(f"  Nenhuma tabela encontrada neste banco de dados.\n")
+
+
+    except sqlite3.Error as e:
+        doc_file.write(f"Erro ao analisar banco de dados SQLite '{filepath}': {e}\n")
+    finally:
+        if conn:
+            conn.close()
+
+def main():
+    root_dir = "."
+    print("‚öôÔ∏è Iniciando An√°lise do Projeto ‚öôÔ∏è")
+
+    # Cria a pasta 'docs' se ela n√£o existir
+    if not os.path.exists(DOCS_FOLDER):
+        os.makedirs(DOCS_FOLDER)
+
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as doc_file:
+        doc_file.write(f"# Documenta√ß√£o do Projeto\n\n")
+        doc_file.write(f"Este documento foi gerado automaticamente pelo script `documentador_projeto.py`.\n\n")
+        doc_file.write(f"Data de Gera√ß√£o: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        doc_file.write(f"Diret√≥rio Raiz: {os.path.abspath(root_dir)}\n\n")
+        doc_file.write("="*80 + "\n")
+
+        for root, dirs, files in os.walk(root_dir):
+            for dir_name in dirs:
+                folder_path = os.path.join(root, dir_name)
+                doc_file.write(f"\nüìÇ Pasta: {folder_path}\n")
+
+            for file_name in files:
+                filepath = os.path.join(root, file_name)
+                file_ext = file_name.lower().split('.')[-1]
+
+                doc_file.write(f"\nüìÑ Arquivo: {filepath}\n")
+
+                file_info = get_file_info(filepath)
+                doc_file.write(f"  Tamanho: {file_info['tamanho_mb']} MB ({file_info['tamanho_kb']} KB, {file_info['tamanho_bytes']} bytes)\n")
+                doc_file.write(f"  N√∫mero de Linhas: {file_info['numero_linhas']}\n")
+
+                if file_ext in ('py', 'txt', 'js', 'html', 'css', 'java', 'c', 'cpp', 'h', 'sh', 'sql', 'md'):
+                    doc_file.write(f"\n  C√≥digo Fonte:\n")
+                    code_content = get_file_content_bruto(filepath)
+                    doc_file.write(code_content)
+                else:
+                    doc_file.write(f"  Conte√∫do n√£o textual ou extens√£o n√£o suportada para visualiza√ß√£o do c√≥digo fonte.\n")
+
+                if file_ext in ('db', 'sqlite', 'sqlite3'):
+                    analyze_sqlite_db(filepath, doc_file)
+
+    print("‚úÖ Documenta√ß√£o Gerada com Sucesso! ‚úÖ")
+    print(f"Arquivo de documenta√ß√£o salvo em: {OUTPUT_FILE}")
+
+if __name__ == "__main__":
+    main()
+📄 Arquivo: .\README.md
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  Número de Linhas: 0
+
+  Código Fonte:
+
+📄 Arquivo: .\requirements.txt
+  Tamanho: 0.00 MB (0.16 KB, 167 bytes)
+  Número de Linhas: 10
+
+  Código Fonte:
+fastapi
+uvicorn
+python-jose[cryptography]  
+cryptography              
+requests
+pytest
+colorama
+python-dotenv             
+pydantic                  
+inquirer
+📄 Arquivo: .\app\API-main-server-mvp.py
+  Tamanho: 0.02 MB (24.25 KB, 24831 bytes)
+  Número de Linhas: 321
+
+  Código Fonte:
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import logging
+import json
+from datetime import datetime, timedelta
+from typing import List, Optional, Any
+from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, ValidationError
+from jose import JWTError, jwt
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from bibliotecas.calc_numbers import Numbers
+SECRET_KEY = os.environ.get("API_SECRET_KEY", "Jump@d2025!!(SegredoSuperSeguroParaTesteAPI)")
+ALGORITHM = os.environ.get("API_JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("API_TOKEN_EXPIRY_MINUTES", "30"))
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token_admin")
+oauth2_scheme_tester = OAuth2PasswordBearer(tokenUrl="token_tester")
+RATE_LIMIT_REQUESTS_PER_MINUTE = int(os.environ.get("API_RATE_LIMIT", "200"))
+RATE_LIMIT_STORAGE = {}
+DIRETORIO_LOGS = os.environ.get("API_LOG_DIR", "logs")
+if not os.path.exists(DIRETORIO_LOGS):
+    os.makedirs(DIRETORIO_LOGS)
+ARQUIVO_LOG_API = os.path.join(DIRETORIO_LOGS, "api-logs.json")
+ARQUIVO_LOG_DETALHADO_API = os.path.join(DIRETORIO_LOGS, "api-detailed-logs.json")
+class FormatterColoridoSeguro(logging.Formatter):
+    CORES = {
+        'DEBUG': '\033[94m',    'INFO': '\033[92m',     'WARNING': '\033[93m',
+        'ERROR': '\033[91m',    'CRITICAL': '\033[97;41m', 'RESET': '\033[0m'
+    }
+    EMOJIS = {
+        'DEBUG': 'üêõ', 'INFO': '‚úÖ', 'WARNING': '‚ö†Ô∏è', 'ERROR': 'üî•', 'CRITICAL': 'üö®'
+    }
+    def format(self, record):
+        cor_log = self.CORES.get(record.levelname, self.CORES['INFO'])
+        reset_cor = self.CORES['RESET']
+        emoji = self.EMOJIS.get(record.levelname, '')
+        nivel_log = f"{cor_log}{record.levelname}{reset_cor}"
+        mensagem = f"{cor_log}{record.getMessage()}{reset_cor}"
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return f"{timestamp} - {emoji} {nivel_log} - {record.name}:{record.lineno} - {mensagem}"
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(FormatterColoridoSeguro())
+api_log_handler = logging.FileHandler(ARQUIVO_LOG_API, encoding='utf-8')
+api_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s", "detalhes": %(log_record_json)s}')
+api_log_handler.setFormatter(api_log_formatter)
+api_detailed_log_handler = logging.FileHandler(ARQUIVO_LOG_DETALHADO_API, encoding='utf-8')
+api_detailed_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "line": "%(lineno)d", "message": "%(message)s", "record": %(log_record_json)s}')
+api_detailed_log_handler.setFormatter(api_detailed_log_formatter)
+logger_app = logging.getLogger("api_server")
+logger_app.setLevel(logging.DEBUG)
+logger_app.addHandler(console_handler)
+logger_app.addHandler(api_log_handler)
+logger_app.addHandler(api_detailed_log_handler)
+app = FastAPI(title="API Matem√°tica Segura", description="API RESTful para opera√ß√µes de soma e m√©dia - SEGURA (N√≠vel M√°ximo)", version="0.9.3", default_response_class=JSONResponse)
+origins_permitidas = os.environ.get("API_CORS_ORIGINS", "http://localhost").split(",")
+class NumerosEntrada(BaseModel):
+    numeros: List[int]
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"numeros": [1, 2, 3, 4]}
+            ]
+        }
+    }
+class TokenRequest(BaseModel):
+    username: str
+    password: str
+class SomaResponse(BaseModel):
+    resultado: int
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"resultado": 10, "mensagem": "Opera√ß√£o de soma bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"}
+            ]
+        }
+class MediaResponse(BaseModel):
+    media: Optional[float] = None
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"media": 2.5, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"}
+            ]
+        }
+class SaudeResponse(BaseModel):
+    status: str
+    mensagem: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"status": "OK", "mensagem": "API est√° saud√°vel e SEGURA"}
+            ]
+        }
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    nivel_acesso: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "token_type": "bearer", "nivel_acesso": "admin"}
+            ]
+        }
+class ErrorResponse(BaseModel):
+    erro: str
+    detalhes: Any
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"erro": "Erro de valida√ß√£o nos dados de entrada", "detalhes": "A lista de n√∫meros n√£o pode estar vazia."}
+            ]
+        }
+def gerar_token_jwt(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+        to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+def verificar_token_jwt(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+async def obter_usuario_atual_jwt(token: str = Depends(oauth2_scheme)):
+    logger_app.debug(f"üîí Validando Token JWT (ADMIN): {token[:10]}...", extra={'log_record_json': {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("‚ö†Ô∏è Token JWT inv√°lido ou expirado (ADMIN). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_admin"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais inv√°lidas. Token JWT ausente, inv√°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+async def obter_usuario_tester_jwt(token: str = Depends(oauth2_scheme_tester)):
+    logger_app.debug(f"üîí Validando Token JWT (TESTER): {token[:10]}...", extra={'log_record_json':  {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("‚ö†Ô∏è Token JWT inv√°lido ou expirado (TESTER). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_tester"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais inv√°lidas. Token JWT de tester ausente, inv√°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+@app.post("/token_admin", tags=["autentica√ß√£o_segura"], response_model=TokenResponse, summary="Gera token JWT seguro (credenciais 'admin/admin')")
+async def gerar_token_admin_seguro(token_request: TokenRequest):
+    logger_app.info(f"üîë Requisi√ß√£o para gerar token JWT (ADMIN) recebida para usu√°rio: '{token_request.username}'", extra={'log_record_json': {"username": token_request.username}})
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    try:
+        with open(ADMIN_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_admin = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"üí• Arquivo de credenciais admin n√£o encontrado: '{ADMIN_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais n√£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"üí• Erro ao decodificar JSON do arquivo de credenciais: '{ADMIN_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": ADMIN_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais.")
+    if token_request.username == usuario_admin["username"] and token_request.password == usuario_admin["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": token_request.username, "nivel_acesso": "admin"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"üîë Token JWT (ADMIN) gerado com sucesso para usu√°rio 'admin'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "admin", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "admin"}
+    else:
+        logger_app.warning(f"‚ö†Ô∏è Falha na autentica√ß√£o (ADMIN) para usu√°rio '{token_request.username}'. Credenciais inv√°lidas.", extra={'log_record_json': {"username": token_request.username}})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais de administrador incorretas.")
+@app.post("/token_tester", tags=["autentica√ß√£o_segura_tester"], response_model=TokenResponse, summary="Gera token JWT seguro para TESTER (credenciais 'tester/tester')")
+async def gerar_token_seguro_tester(form_data: OAuth2PasswordRequestForm = Depends()):
+    logger_app.info(f"üîë Requisi√ß√£o para gerar token JWT (TESTER) recebida para usu√°rio: '{form_data.username}'", extra={'log_record_json': {"username": form_data.username}})
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    try:
+        with open(TESTER_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_tester = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"üí• Arquivo de credenciais tester n√£o encontrado: '{TESTER_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": TESTER_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais de tester n√£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"üí• Erro ao decodificar JSON do arquivo de credenciais tester: '{TESTER_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": TESTER_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais de tester.")
+    if form_data.username == usuario_tester["username"] and form_data.password == usuario_tester["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": form_data.username, "nivel_acesso": "tester"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"üîë Token JWT (TESTER) gerado com sucesso para usu√°rio 'tester'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "tester", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "tester"}
+    else:
+        logger_app.warning(f"‚ö†Ô∏è Requisi√ß√£o para /token_tester com credenciais de tester inv√°lidas (IGNORADO para testes API).", extra={'log_record_json': {"username": form_data.username}})
+        return {"access_token": "TOKEN_INVALIDO_PARA_TESTE", "token_type": "bearer", "nivel_acesso": "tester"}
+@app.post("/somar", tags=["matem√°tica_segura"], summary="Soma um vetor de n√∫meros inteiros (PROTEGIDO)", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=SomaResponse, response_class=JSONResponse)
+async def somar_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)):
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, Usu√°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, N√≠vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"‚û°Ô∏è  Requisi√ß√£o POST em '/somar' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"üì¶ Corpo da requisi√ß√£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_soma = instancia_numeros.sum_numbers(lista_numeros)
+        conteudo_resposta = {"resultado": resultado_soma, "mensagem": "Opera√ß√£o de soma bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"‚ûï Opera√ß√£o de soma bem-sucedida. Resultado: {resultado_soma} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_soma": resultado_soma, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"‚ö†Ô∏è Erro de valida√ß√£o nos dados de entrada para '/somar': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"üî• Erro de tipo de dados na biblioteca calc_numbers para '/somar': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"üî• Exce√ß√£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"‚ö†Ô∏è Erro de Valida√ß√£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"üí• Erro Cr√≠tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+@app.post("/calcular_media", tags=["matem√°tica_segura"], summary="Calcula a m√©dia de um vetor de n√∫meros inteiros (PROTEGIDO)", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=MediaResponse, response_class=JSONResponse)
+async def calcular_media_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)):
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, Usu√°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, N√≠vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"‚û°Ô∏è  Requisi√ß√£o POST em '/calcular_media' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"üì¶ Corpo da requisi√ß√£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_media = instancia_numeros.calculate_average(lista_numeros)
+        if resultado_media is None:
+            return {"media": None, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida para lista vazia", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        conteudo_resposta = {"media": resultado_media, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"‚ûó Opera√ß√£o de m√©dia bem-sucedida. M√©dia: {resultado_media} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_media": resultado_media, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"‚ö†Ô∏è Erro de valida√ß√£o nos dados de entrada para '/calcular_media': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"üî• Erro de tipo de dados na biblioteca calc_numbers para '/calcular_media': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"üî• Exce√ß√£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"‚ö†Ô∏è Erro de Valida√ß√£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"üí• Erro Cr√≠tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+@app.get("/saude", tags=["sistema_seguro"], summary="Endpoint para verificar a sa√∫de da API (P√öBLICO)", response_class=JSONResponse, response_model=SaudeResponse)
+async def verificar_saude_segura():
+    timestamp = datetime.now().isoformat()
+    saude_template = {
+        "status": "OK",
+        "version": "0.9.3",
+        "ambiente": os.environ.get("API_ENVIRONMENT", "Desenvolvimento"),
+        "timestamp": timestamp,
+        "mensagem": "API Matem√°tica Segura est√° operacional e respondendo.",
+        "detalhes": {
+            "servidor": "FastAPI",
+            "seguranca": "JWT, HTTPS, Rate Limiting",
+            "logs": "Detalhado em JSON"
+        },
+        "status_code": 200,
+        "emoji_status": "üöÄ",
+        "indicador_saude": "üíö √ìtimo"
+    }
+    return saude_template
+if __name__ == "__main__":
+    import uvicorn
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    os.makedirs(CREDENTIALS_DIR, exist_ok=True)
+    CERT_FILE = os.path.join(CREDENTIALS_DIR, "certificado.pem")
+    KEY_FILE = os.path.join(CREDENTIALS_DIR, "chave.pem")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
+        logger_app.info("üîë Gerando certificados autoassinados para HTTPS...", extra={'log_record_json': {"acao": "geracao_certificados_https"}})
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+        subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+        builder = x509.CertificateBuilder().subject_name(subject).issuer_name(subject).public_key(private_key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(datetime.utcnow()).not_valid_after(datetime.utcnow() + timedelta(days=365)).add_extension(x509.SubjectAlternativeName([x509.DNSName("localhost")]), critical=False)
+        certificate = builder.sign(private_key, hashes.SHA256(), default_backend())
+        with open(KEY_FILE, "wb") as key_f:
+            key_f.write(private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+        with open(CERT_FILE, "wb") as cert_f:
+            cert_f.write(certificate.public_bytes(serialization.Encoding.PEM))
+        logger_app.info(f"üîë Certificados autoassinados gerados e salvos em: '{CREDENTIALS_DIR}/'", extra={'log_record_json': {"acao": "certificados_salvos", "diretorio": CREDENTIALS_DIR}})
+    else:
+        logger_app.info(f"üîë Certificados HTTPS autoassinados j√° existentes em: '{CREDENTIALS_DIR}/'. Usando existentes.", extra={'log_record_json': {"acao": "certificados_existentes", "diretorio": CREDENTIALS_DIR}})
+    if not os.path.exists(ADMIN_CREDENTIALS_FILE):
+        logger_app.info(f"‚öôÔ∏è  Criando arquivo de credenciais admin padr√£o: '{ADMIN_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_admin", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        admin_creds = {"username": "admin", "password": "admin"}
+        with open(ADMIN_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(admin_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais admin padr√£o criado.", extra={'log_record_json': {"acao": "creds_admin_criadas_sucesso", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais admin j√° existente: '{ADMIN_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_admin_existentes", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    if not os.path.exists(TESTER_CREDENTIALS_FILE):
+        logger_app.info(f"‚öôÔ∏è  Criando arquivo de credenciais tester padr√£o: '{TESTER_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_tester", "arquivo": TESTER_CREDENTIALS_FILE}})
+        tester_creds = {"username": "tester", "password": "tester"}
+        with open(TESTER_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(tester_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais tester padr√£o criado.", extra={'log_record_json': {"acao": "creds_tester_criadas_sucesso", "arquivo": TESTER_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais tester j√° existente: '{TESTER_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_tester_existentes", "arquivo": TESTER_CREDENTIALS_FILE}})
+    uvicorn.run(app, host="0.0.0.0", port=8882, ssl_certfile=CERT_FILE, ssl_keyfile=KEY_FILE)
+📄 Arquivo: .\app\API-main-server-prod.py
+  Tamanho: 0.03 MB (27.37 KB, 28030 bytes)
+  Número de Linhas: 383
+
+  Código Fonte:
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import logging
+import json
+from datetime import datetime, timedelta
+from typing import List, Optional, Any
+from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, ValidationError
+from jose import JWTError, jwt
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from bibliotecas.calc_numbers import Numbers
+
+# ‚öôÔ∏è Configura√ß√µes da API (vari√°veis de ambiente ou valores padr√£o)
+SECRET_KEY = os.environ.get("API_SECRET_KEY", "Jump@d2025!!(SegredoSuperSeguroParaTesteAPI)")
+ALGORITHM = os.environ.get("API_JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("API_TOKEN_EXPIRY_MINUTES", "30"))
+RATE_LIMIT_REQUESTS_PER_MINUTE = int(os.environ.get("API_RATE_LIMIT", "200"))
+DIRETORIO_LOGS = os.environ.get("API_LOG_DIR", "logs")
+CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+origins_permitidas = os.environ.get("API_CORS_ORIGINS", "http://localhost").split(",")
+
+# üîë Esquemas de seguran√ßa OAuth2 para tokens JWT
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token_admin") # üõ°Ô∏è Define esquema de seguran√ßa para token de admin
+oauth2_scheme_tester = OAuth2PasswordBearer(tokenUrl="token_tester") # üõ°Ô∏è Define esquema de seguran√ßa para token de tester
+
+# ü™µ Configura√ß√£o de Logging (logs coloridos no console e logs JSON em arquivos)
+if not os.path.exists(DIRETORIO_LOGS):
+    os.makedirs(DIRETORIO_LOGS)
+ARQUIVO_LOG_API = os.path.join(DIRETORIO_LOGS, "api-logs.json")
+ARQUIVO_LOG_DETALHADO_API = os.path.join(DIRETORIO_LOGS, "api-detailed-logs.json")
+
+class FormatterColoridoSeguro(logging.Formatter): # ‚ú® Formatter para logs coloridos no console
+    CORES = {
+        'DEBUG': '\033[94m',    'INFO': '\033[92m',     'WARNING': '\033[93m',
+        'ERROR': '\033[91m',    'CRITICAL': '\033[97;41m', 'RESET': '\033[0m'
+    }
+    EMOJIS = {
+        'DEBUG': 'üêõ', 'INFO': '‚úÖ', 'WARNING': '‚ö†Ô∏è', 'ERROR': 'üî•', 'CRITICAL': 'üö®'
+    }
+    def format(self, record):
+        cor_log = self.CORES.get(record.levelname, self.CORES['INFO'])
+        reset_cor = self.CORES['RESET']
+        emoji = self.EMOJIS.get(record.levelname, '')
+        nivel_log = f"{cor_log}{record.levelname}{reset_cor}"
+        mensagem = f"{cor_log}{record.getMessage()}{reset_cor}"
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return f"{timestamp} - {emoji} {nivel_log} - {record.name}:{record.lineno} - {mensagem}"
+
+console_handler = logging.StreamHandler() # ‚úçÔ∏è Handler para logs no console
+console_handler.setFormatter(FormatterColoridoSeguro())
+api_log_handler = logging.FileHandler(ARQUIVO_LOG_API, encoding='utf-8') # ‚úçÔ∏è Handler para logs JSON resumidos
+api_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s", "detalhes": %(log_record_json)s}')
+api_log_handler.setFormatter(api_log_formatter)
+api_detailed_log_handler = logging.FileHandler(ARQUIVO_LOG_DETALHADO_API, encoding='utf-8') # ‚úçÔ∏è Handler para logs JSON detalhados
+api_detailed_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "line": "%(lineno)d", "message": "%(message)s", "record": %(log_record_json)s}')
+api_detailed_log_handler.setFormatter(api_detailed_log_formatter)
+
+logger_app = logging.getLogger("api_server") # ü™µ Logger principal da aplica√ß√£o
+logger_app.setLevel(logging.DEBUG)
+logger_app.addHandler(console_handler)
+logger_app.addHandler(api_log_handler)
+logger_app.addHandler(api_detailed_log_handler)
+
+# üöÄ Inicializa√ß√£o da Aplica√ß√£o FastAPI
+app = FastAPI(
+    title="API Matem√°tica Segura",
+    description="API RESTful para opera√ß√µes de soma e m√©dia - SEGURA (N√≠vel M√°ximo) com autentica√ß√£o JWT e HTTPS.",
+    version="0.9.3"
+)
+
+# ‚ÜîÔ∏è Configura√ß√£o de CORS (Cross-Origin Resource Sharing) - Ajuste 'origins_permitidas' conforme necess√°rio
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins_permitidas,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# üõ°Ô∏è Modelos de Dados (Pydantic) para Valida√ß√£o e Documenta√ß√£o Autom√°tica
+
+class NumerosEntrada(BaseModel): # Modelo para lista de n√∫meros na requisi√ß√£o
+    numeros: List[int]
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"numeros": [1, 2, 3, 4]} # Exemplo para documenta√ß√£o Swagger/ReDoc
+            ]
+        }
+    }
+
+class TokenRequest(BaseModel): # Modelo para requisi√ß√£o de token
+    username: str
+    password: str
+
+class TokenResponse(BaseModel): # Modelo para resposta de token JWT
+    access_token: str
+    token_type: str
+    nivel_acesso: str
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "token_type": "bearer", "nivel_acesso": "admin"} # Exemplo token
+            ]
+        }
+    }
+
+class SomaResponse(BaseModel): # Modelo para resposta da rota /somar
+    resultado: int
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"resultado": 10, "mensagem": "Opera√ß√£o de soma bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"} # Exemplo soma
+            ]
+        }
+
+class MediaResponse(BaseModel): # Modelo para resposta da rota /calcular_media
+    media: Optional[float] = None
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"media": 2.5, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"} # Exemplo m√©dia
+            ]
+        }
+
+class SaudeResponse(BaseModel): # Modelo para resposta da rota /saude
+    status: str
+    mensagem: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"status": "OK", "mensagem": "API est√° saud√°vel e SEGURA"} # Exemplo sa√∫de
+            ]
+        }
+
+class ErrorResponse(BaseModel): # Modelo para respostas de erro
+    erro: str
+    detalhes: Any
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"erro": "Erro de valida√ß√£o nos dados de entrada", "detalhes": "A lista de n√∫meros n√£o pode estar vazia."} # Exemplo erro
+            ]
+        }
+
+# üîë Fun√ß√µes de Seguran√ßa (JWT - JSON Web Tokens)
+
+def gerar_token_jwt(data: dict, expires_delta: Optional[timedelta] = None) -> str: # üîë Gera token JWT
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+        to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verificar_token_jwt(token: str) -> Optional[dict]: # ‚úÖ Verifica e decodifica token JWT
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+async def obter_usuario_atual_jwt(token: str = Depends(oauth2_scheme)) -> dict: # üõ°Ô∏è Depend√™ncia para obter usu√°rio ADMIN atual via JWT
+    logger_app.debug(f"üîí Validando Token JWT (ADMIN): {token[:10]}...", extra={'log_record_json': {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("‚ö†Ô∏è Token JWT inv√°lido ou expirado (ADMIN). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_admin"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais inv√°lidas. Token JWT ausente, inv√°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+
+async def obter_usuario_tester_jwt(token: str = Depends(oauth2_scheme_tester)) -> dict: # üõ°Ô∏è Depend√™ncia para obter usu√°rio TESTER atual via JWT
+    logger_app.debug(f"üîí Validando Token JWT (TESTER): {token[:10]}...", extra={'log_record_json':  {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("‚ö†Ô∏è Token JWT inv√°lido ou expirado (TESTER). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_tester"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais inv√°lidas. Token JWT de tester ausente, inv√°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+
+# üîë Endpoints de Autentica√ß√£o Segura (JWT)
+
+@app.post("/token_admin", tags=["autentica√ß√£o_segura"], response_model=TokenResponse, summary="Gera token JWT seguro para Administradores", description="Endpoint para gerar um token JWT de acesso com n√≠vel 'admin'. Requer credenciais de administrador.")
+async def gerar_token_admin_seguro(token_request: TokenRequest): # üîë Rota para gerar token JWT de ADMIN
+    logger_app.info(f"üîë Requisi√ß√£o para gerar token JWT (ADMIN) recebida para usu√°rio: '{token_request.username}'", extra={'log_record_json': {"username": token_request.username}})
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    try:
+        with open(ADMIN_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_admin = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"üí• Arquivo de credenciais admin n√£o encontrado: '{ADMIN_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais n√£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"üí• Erro ao decodificar JSON do arquivo de credenciais: '{ADMIN_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": ADMIN_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais.")
+    if token_request.username == usuario_admin["username"] and token_request.password == usuario_admin["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": token_request.username, "nivel_acesso": "admin"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"üîë Token JWT (ADMIN) gerado com sucesso para usu√°rio 'admin'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "admin", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "admin"}
+    else:
+        logger_app.warning(f"‚ö†Ô∏è Falha na autentica√ß√£o (ADMIN) para usu√°rio '{token_request.username}'. Credenciais inv√°lidas.", extra={'log_record_json': {"username": token_request.username}})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais de administrador incorretas.")
+
+@app.post("/token_tester", tags=["autentica√ß√£o_segura_tester"], response_model=TokenResponse, summary="Gera token JWT seguro para Testers", description="Endpoint para gerar um token JWT de acesso com n√≠vel 'tester'. Requer credenciais de tester.")
+async def gerar_token_seguro_tester(form_data: OAuth2PasswordRequestForm = Depends()): # üîë Rota para gerar token JWT de TESTER
+    logger_app.info(f"üîë Requisi√ß√£o para gerar token JWT (TESTER) recebida para usu√°rio: '{form_data.username}'", extra={'log_record_json': {"username": form_data.username}})
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    try:
+        with open(TESTER_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_tester = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"üí• Arquivo de credenciais tester n√£o encontrado: '{TESTER_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": TESTER_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais de tester n√£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"üí• Erro ao decodificar JSON do arquivo de credenciais tester: '{TESTER_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": TESTER_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais de tester.")
+    if form_data.username == usuario_tester["username"] and form_data.password == usuario_tester["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": form_data.username, "nivel_acesso": "tester"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"üîë Token JWT (TESTER) gerado com sucesso para usu√°rio 'tester'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "tester", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "tester"}
+    else:
+        logger_app.warning(f"‚ö†Ô∏è Requisi√ß√£o para /token_tester com credenciais de tester inv√°lidas (IGNORADO para testes API).", extra={'log_record_json': {"username": form_data.username}})
+        return {"access_token": "TOKEN_INVALIDO_PARA_TESTE", "token_type": "bearer", "nivel_acesso": "tester"}
+
+# ‚ûï Endpoints de Opera√ß√µes Matem√°ticas (PROTEGIDOS por JWT)
+
+@app.post("/somar", tags=["matem√°tica_segura"], summary="Soma um vetor de n√∫meros inteiros", description="Endpoint PROTEGIDO que realiza a soma de uma lista de n√∫meros inteiros fornecida no corpo da requisi√ß√£o. Requer token JWT de administrador v√°lido.", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=SomaResponse, response_class=JSONResponse)
+async def somar_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)): # ‚ûï Rota para somar vetor (PROTEGIDA)
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, Usu√°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, N√≠vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"‚û°Ô∏è  Requisi√ß√£o POST em '/somar' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"üì¶ Corpo da requisi√ß√£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_soma = instancia_numeros.sum_numbers(lista_numeros)
+        conteudo_resposta = {"resultado": resultado_soma, "mensagem": "Opera√ß√£o de soma bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"‚ûï Opera√ß√£o de soma bem-sucedida. Resultado: {resultado_soma} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_soma": resultado_soma, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"‚ö†Ô∏è Erro de valida√ß√£o nos dados de entrada para '/somar': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"üî• Erro de tipo de dados na biblioteca calc_numbers para '/somar': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"üî• Exce√ß√£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"‚ö†Ô∏è Erro de Valida√ß√£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"üí• Erro Cr√≠tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+
+@app.post("/calcular_media", tags=["matem√°tica_segura"], summary="Calcula a m√©dia de um vetor de n√∫meros inteiros", description="Endpoint PROTEGIDO que calcula a m√©dia de uma lista de n√∫meros inteiros fornecida. Requer token JWT de administrador v√°lido.", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=MediaResponse, response_class=JSONResponse)
+async def calcular_media_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)): # ‚ûó Rota para calcular m√©dia vetor (PROTEGIDA)
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, Usu√°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, N√≠vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"‚û°Ô∏è  Requisi√ß√£o POST em '/calcular_media' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"üì¶ Corpo da requisi√ß√£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_media = instancia_numeros.calculate_average(lista_numeros)
+        if resultado_media is None:
+            return {"media": None, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida para lista vazia", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        conteudo_resposta = {"media": resultado_media, "mensagem": "Opera√ß√£o de m√©dia bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"‚ûó Opera√ß√£o de m√©dia bem-sucedida. M√©dia: {resultado_media} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_media": resultado_media, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"‚ö†Ô∏è Erro de valida√ß√£o nos dados de entrada para '/calcular_media': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"üî• Erro de tipo de dados na biblioteca calc_numbers para '/calcular_media': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"üî• Exce√ß√£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"‚ö†Ô∏è Erro de Valida√ß√£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"üí• Erro Cr√≠tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+
+# ü©∫ Endpoint de Sa√∫de da API (P√öBLICO - Sem Autentica√ß√£o)
+
+@app.get("/saude", tags=["sistema_seguro"], summary="Verifica a sa√∫de da API", description="Endpoint P√öBLICO para verificar se a API est√° online e funcionando corretamente.", response_class=JSONResponse, response_model=SaudeResponse)
+async def verificar_saude_segura(): # ü©∫ Rota de sa√∫de da API (P√öBLICA)
+    timestamp = datetime.now().isoformat()
+    saude_template = {
+        "status": "OK",
+        "version": "0.9.3",
+        "ambiente": os.environ.get("API_ENVIRONMENT", "Desenvolvimento"),
+        "timestamp": timestamp,
+        "mensagem": "API Matem√°tica Segura est√° operacional e respondendo.",
+        "detalhes": {
+            "servidor": "FastAPI",
+            "seguranca": "JWT, HTTPS, Rate Limiting",
+            "logs": "Detalhado em JSON"
+        },
+        "status_code": 200,
+        "emoji_status": "üöÄ",
+        "indicador_saude": "üíö √ìtimo"
+    }
+    return saude_template
+
+# ‚öôÔ∏è Execu√ß√£o do Servidor Uvicorn (HTTPS)
+if __name__ == "__main__":
+    import uvicorn
+
+    # üîë Cria diret√≥rio para credenciais e certificados se n√£o existirem
+    os.makedirs(CREDENTIALS_DIR, exist_ok=True)
+    CERT_FILE = os.path.join(CREDENTIALS_DIR, "certificado.pem")
+    KEY_FILE = os.path.join(CREDENTIALS_DIR, "chave.pem")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+
+    # üîë Gera certificados autoassinados HTTPS se n√£o existirem
+    if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
+        logger_app.info("üîë Gerando certificados autoassinados para HTTPS...", extra={'log_record_json': {"acao": "geracao_certificados_https"}})
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+        subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+        builder = x509.CertificateBuilder().subject_name(subject).issuer_name(subject).public_key(private_key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(datetime.utcnow()).not_valid_after(datetime.utcnow() + timedelta(days=365)).add_extension(x509.SubjectAlternativeName([x509.DNSName("localhost")]), critical=False)
+        certificate = builder.sign(private_key, hashes.SHA256(), default_backend())
+        with open(KEY_FILE, "wb") as key_f:
+            key_f.write(private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+        with open(CERT_FILE, "wb") as cert_f:
+            cert_f.write(certificate.public_bytes(serialization.Encoding.PEM))
+        logger_app.info(f"üîë Certificados autoassinados gerados e salvos em: '{CREDENTIALS_DIR}/'", extra={'log_record_json': {"acao": "certificados_salvos", "diretorio": CREDENTIALS_DIR}})
+    else:
+        logger_app.info(f"üîë Certificados HTTPS autoassinados j√° existentes em: '{CREDENTIALS_DIR}/'. Usando existentes.", extra={'log_record_json': {"acao": "certificados_existentes", "diretorio": CREDENTIALS_DIR}})
+
+    # ‚öôÔ∏è Cria arquivos de credenciais padr√£o (admin/admin, tester/tester) se n√£o existirem
+    if not os.path.exists(ADMIN_CREDENTIALS_FILE):
+        logger_app.info(f"‚öôÔ∏è  Criando arquivo de credenciais admin padr√£o: '{ADMIN_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_admin", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        admin_creds = {"username": "admin", "password": "admin"}
+        with open(ADMIN_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(admin_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais admin padr√£o criado.", extra={'log_record_json': {"acao": "creds_admin_criadas_sucesso", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais admin j√° existente: '{ADMIN_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_admin_existentes", "arquivo": ADMIN_CREDENTIALS_FILE}})
+
+    if not os.path.exists(TESTER_CREDENTIALS_FILE):
+        logger_app.info(f"‚öôÔ∏è  Criando arquivo de credenciais tester padr√£o: '{TESTER_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_tester", "arquivo": TESTER_CREDENTIALS_FILE}})
+        tester_creds = {"username": "tester", "password": "tester"}
+        with open(TESTER_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(tester_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais tester padr√£o criado.", extra={'log_record_json': {"acao": "creds_tester_criadas_sucesso", "arquivo": TESTER_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"‚öôÔ∏è  Arquivo de credenciais tester j√° existente: '{TESTER_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_tester_existentes", "arquivo": TESTER_CREDENTIALS_FILE}})
+
+    # üöÄ Inicia o servidor Uvicorn com HTTPS e documenta√ß√£o Swagger/ReDoc AUTOM√ÅTICA no /docs e /redoc
+    print("‚úÖ Servidor FastAPI inicializado. ")
+    print("‚û°Ô∏è  Acesse a documenta√ß√£o interativa Swagger UI em: http://localhost:8882/docs") # üìñ Instru√ß√µes Swagger UI
+    print("‚û°Ô∏è  Acesse a documenta√ß√£o alternativa ReDoc em: http://localhost:8882/redoc") # üìö Instru√ß√µes ReDoc
+    uvicorn.run(app, host="0.0.0.0", port=8882, ssl_certfile=CERT_FILE, ssl_keyfile=KEY_FILE)
+📂 Pasta: .\bibliotecas\__pycache__
+
+📄 Arquivo: .\bibliotecas\calc_numbers.py
+  Tamanho: 0.00 MB (3.09 KB, 3160 bytes)
+  Número de Linhas: 59
+
+  Código Fonte:
+class Numbers:
+    def __init__(self):
+        pass
+
+    def sum_numbers(self, numeros: any) -> int:
+        try:
+            validated_list = self._validate_integer_list(numeros, operation_name="soma")
+            if not validated_list:
+                raise ValueError("Erro de valor na operação de soma: A lista de números não pode estar vazia.")
+            return sum(validated_list)
+        except (TypeError, ValueError) as e:
+            raise e
+
+    def calculate_average(self, numeros: any) -> float | None:
+        try:
+            validated_list = self._validate_integer_list(numeros, operation_name="média")
+            if not validated_list:
+                return None
+            return sum(validated_list) / len(validated_list)
+        except (TypeError, ValueError) as e:
+            raise e
+
+    def _validate_input_list(self, data: any, operation_name: str) -> list:
+        if not isinstance(data, list):
+            raise TypeError(f"Erro de tipo na operação de {operation_name}: A entrada deve ser uma lista, mas foi fornecido '{type(data).__name__}'.")
+        if data is None:
+            raise ValueError(f"Erro de valor na operação de {operation_name}: A lista de números não pode ser None.")
+        if not data and operation_name == "soma":
+            raise ValueError(f"Erro de valor na operação de {operation_name}: A lista de números não pode estar vazia.")
+        if not data and operation_name == "média":
+            return []
+        return data
+
+    def _validate_integer_list(self, data: any, operation_name: str) -> list[int]:
+        try:
+            validated_list = self._validate_input_list(data, operation_name)
+        except (TypeError, ValueError) as e:
+            raise e
+
+        if not validated_list and operation_name == "média":
+            return []
+
+        integer_list = []
+        for index, item in enumerate(validated_list):
+            if item is None:
+                raise ValueError(f"Erro de valor na operação de {operation_name}: Elemento na posição {index+1} não pode ser None.")
+            if isinstance(item, int):
+                integer_list.append(item)
+            elif isinstance(item, (float, str)):
+                try:
+                    integer_item = int(float(item))
+                    if integer_item != float(item):
+                        raise ValueError(f"Erro de valor na operação de {operation_name}: Elemento na posição {index+1} ('{item}') não é um inteiro válido e a conversão resultaria em perda de informação. Forneça apenas inteiros.")
+                    integer_list.append(integer_item)
+                except ValueError:
+                    raise ValueError(f"Erro de valor na operação de {operation_name}: Elemento na posição {index+1} ('{item}') não é um inteiro válido e não pode ser convertido para inteiro.")
+            else:
+                raise ValueError(f"Erro de valor na operação de {operation_name}: Elemento na posição {index+1} ('{item}') não é um inteiro válido. Tipo encontrado: '{type(item).__name__}'.")
+        return integer_list
+📄 Arquivo: .\bibliotecas\__pycache__\calc_numbers.cpython-310.pyc
+  Tamanho: 0.00 MB (2.58 KB, 2642 bytes)
+  Número de Linhas: 24
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\credentials\admin_credentials.json
+  Tamanho: 0.00 MB (0.05 KB, 55 bytes)
+  Número de Linhas: 4
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\credentials\certificado.pem
+  Tamanho: 0.00 MB (1.01 KB, 1034 bytes)
+  Número de Linhas: 18
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\credentials\chave.pem
+  Tamanho: 0.00 MB (1.66 KB, 1704 bytes)
+  Número de Linhas: 28
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\credentials\tester_credentials.json
+  Tamanho: 0.00 MB (0.06 KB, 57 bytes)
+  Número de Linhas: 4
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\docs\docproject.txt
+  Tamanho: 0.06 MB (65.97 KB, 67549 bytes)
+  Número de Linhas: 1024
+
+  Código Fonte:
+# DocumentaÃ§Ã£o do Projeto
+
+Este documento foi gerado automaticamente pelo script `documentador_projeto.py`.
+
+Data de GeraÃ§Ã£o: 2025-03-10 00:32:48
+DiretÃ³rio Raiz: D:\projeto jumpad
+
+================================================================================
+
+ğŸ“‚ Pasta: .\app
+
+ğŸ“‚ Pasta: .\bibliotecas
+
+ğŸ“‚ Pasta: .\config
+
+ğŸ“‚ Pasta: .\credentials
+
+ğŸ“‚ Pasta: .\docs
+
+ğŸ“‚ Pasta: .\exceptions
+
+ğŸ“‚ Pasta: .\logs
+
+ğŸ“‚ Pasta: .\schemas
+
+ğŸ“‚ Pasta: .\tests
+
+ğŸ“‚ Pasta: .\test_logs
+
+ğŸ“„ Arquivo: .\.gitignore
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  NÃºmero de Linhas: 0
+  ConteÃºdo nÃ£o textual ou extensÃ£o nÃ£o suportada para visualizaÃ§Ã£o do cÃ³digo fonte.
+
+ğŸ“„ Arquivo: .\CHANGELOG.md
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  NÃºmero de Linhas: 0
+
+  CÃ³digo Fonte:
+
+ğŸ“„ Arquivo: .\Dockerfile
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  NÃºmero de Linhas: 0
+  ConteÃºdo nÃ£o textual ou extensÃ£o nÃ£o suportada para visualizaÃ§Ã£o do cÃ³digo fonte.
+
+ğŸ“„ Arquivo: .\doc_gen.py
+  Tamanho: 0.00 MB (2.06 KB, 2108 bytes)
+  NÃºmero de Linhas: 42
+
+  CÃ³digo Fonte:
+import os
+import datetime
+
+def document_project_structure(start_path="."):
+    docs_dir = os.path.join(start_path, "docs")
+    doc_file_path = os.path.join(docs_dir, "project_structure.txt")
+
+    if not os.path.exists(docs_dir):
+        os.makedirs(docs_dir)
+        print(f"DiretÃ³rio 'docs/' criado.")
+
+    with open(doc_file_path, 'w', encoding='utf-8') as doc_file:
+        doc_file.write("DOCUMENTAÃ‡ÃƒO AUTOMÃTICA DA ESTRUTURA DO PROJETO\n")
+        doc_file.write("---------------------------------------------------\n")
+        doc_file.write(f"Gerado por: {os.path.basename(__file__)}\n")
+        doc_file.write("Data de GeraÃ§Ã£o: {:%d/%m/%Y %H:%M:%S}\n".format(datetime.datetime.now()))
+        doc_file.write("CodificaÃ§Ã£o do Arquivo: UTF-8\n")
+        doc_file.write("\nEstrutura de diretÃ³rios e arquivos a partir da raiz do projeto:\n\n")
+
+        for root, dirs, files in os.walk(start_path):
+            depth = root.replace(start_path, '').count(os.sep)
+            indent = '  ' * depth
+            doc_file.write(f"{indent}{os.path.basename(root)}/\n")
+
+            sub_indent = '  ' * (depth + 1)
+            for filename in files:
+                if filename != os.path.basename(__file__):
+                    doc_file.write(f"{sub_indent}{filename}\n")
+
+        doc_file.write("\n---------------------------------------------------\n")
+        doc_file.write("Fim da DocumentaÃ§Ã£o da Estrutura do Projeto.\n")
+        doc_file.write("\nEste arquivo foi gerado automaticamente. Para atualizar a documentaÃ§Ã£o,\n")
+        doc_file.write("execute o script novamente: 'python {}'\n".format(os.path.basename(__file__)))
+        doc_file.write("Certifique-se de que seu editor de texto/visualizador utilize UTF-8 para exibir corretamente os caracteres.\n")
+
+    print(f"\nDocumentaÃ§Ã£o da estrutura do projeto gerada com sucesso em: '{doc_file_path}' (CodificaÃ§Ã£o: UTF-8)")
+
+
+if __name__ == "__main__":
+    print("Gerando documentaÃ§Ã£o da estrutura do projeto (UTF-8)...")
+    document_project_structure()
+    print("\nProcesso concluÃ­do.")
+ğŸ“„ Arquivo: .\doc_gen_full.py
+  Tamanho: 0.01 MB (8.60 KB, 8805 bytes)
+  NÃºmero de Linhas: 192
+
+  CÃ³digo Fonte:
+import os
+import sqlite3
+import chardet
+import datetime
+
+# Define o nome da pasta 'docs' e o caminho completo para o arquivo de saâˆšâ‰ da
+DOCS_FOLDER = "docs"
+OUTPUT_FILE = os.path.join(DOCS_FOLDER, "docproject.txt")
+SAMPLE_SIZE = 3
+LARGE_TABLE_THRESHOLD = 100
+
+def detect_encoding(filepath):
+    try:
+        with open(filepath, 'rb') as f:
+            rawdata = f.read()
+            result = chardet.detect(rawdata)
+            return result['encoding']
+    except Exception:
+        return 'utf-8'
+
+def get_file_info(filepath):
+    size_bytes = os.path.getsize(filepath)
+    size_kb = size_bytes / 1024
+    size_mb = size_kb / 1024
+
+    line_count = 0
+    try:
+        encoding = detect_encoding(filepath)
+        with open(filepath, 'r', encoding=encoding, errors='ignore') as f:
+            for line in f:
+                line_count += 1
+    except Exception as e:
+        print(f"Aviso: Erro ao contar linhas de '{filepath}': {e}")
+        line_count = -1
+
+    return {
+        "tamanho_bytes": size_bytes,
+        "tamanho_kb": f"{size_kb:.2f}",
+        "tamanho_mb": f"{size_mb:.2f}",
+        "numero_linhas": line_count
+    }
+
+def get_file_content_bruto(filepath):
+    try:
+        encoding = detect_encoding(filepath)
+        with open(filepath, 'r', encoding=encoding, errors='ignore') as f:
+            return f.read()
+    except Exception as e:
+        print(f"Aviso: Erro ao ler conteâˆšâˆ«do de '{filepath}': {e}")
+        return "[ERRO AO LER CONTEâˆšÃ¶DO]"
+
+def analyze_sqlite_db(filepath, doc_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(filepath)
+        cursor = conn.cursor()
+
+        doc_file.write("\n" + "="*80 + "\n")
+        doc_file.write(f"  ï£¿Ã¼Ã­Ã¦ Banco de Dados SQLite: {filepath}\n")
+        doc_file.write("="*80 + "\n")
+
+        db_size_bytes = os.path.getsize(filepath)
+        db_size_kb = db_size_bytes / 1024
+        db_size_mb = db_size_kb / 1024
+
+        doc_file.write(f"  Tamanho: {db_size_mb:.2f} MB ({db_size_kb:.2f} KB, {db_size_bytes} bytes)\n")
+
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        if tables:
+            doc_file.write(f"\n  Tabelas:\n")
+            for table_name_tuple in tables:
+                table_name = table_name_tuple[0]
+                doc_file.write(f"\n    ï£¿Ã¼Ã³Ã‡Ã”âˆÃ¨ Tabela: {table_name}\n")
+
+                cursor.execute(f"PRAGMA table_info('{table_name}')")
+                columns_info = cursor.fetchall()
+                if columns_info:
+                    doc_file.write(f"    Colunas:\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+                    doc_file.write(f"    | {'ID':<4} | {'Nome':<20} | {'Tipo':<15} | {'NâˆšÂ£o Nulo?':<10} | {'PadrâˆšÂ£o':<10} | {'PK':<3} |\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+
+                    for col_info in columns_info:
+                        cid, name, type_str, notnull, dflt_value, pk = col_info
+                        doc_file.write(f"    | {cid:<4} | {name:<20} | {type_str:<15} | {'Sim' if notnull else 'NâˆšÂ£o':<10} | {str(dflt_value):<10} | {'Sim' if pk else 'NâˆšÂ£o':<3} |\n")
+                    doc_file.write("    " + "-"*74 + "\n")
+
+
+                cursor.execute(f"SELECT COUNT(*) FROM '{table_name}'")
+                row_count = cursor.fetchone()[0]
+                doc_file.write(f"    Nâˆšâˆ«mero de Registros: {row_count}\n")
+
+                if row_count > 0:
+                    doc_file.write(f"    Amostra de Dados:\n")
+
+                    doc_file.write(f"      Topo ({SAMPLE_SIZE} registros):\n")
+                    cursor.execute(f"SELECT * FROM '{table_name}' LIMIT {SAMPLE_SIZE}")
+                    top_rows = cursor.fetchall()
+                    if top_rows:
+                        header_row = [col_info[1] for col_info in columns_info]
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+                        for row in top_rows:
+                            doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+
+                    doc_file.write(f"      Fundo ({SAMPLE_SIZE} registros):\n")
+                    cursor.execute(f"SELECT * FROM '{table_name}' ORDER BY ROWID DESC LIMIT {SAMPLE_SIZE}")
+                    bottom_rows = cursor.fetchall()
+                    if bottom_rows:
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                        for row in bottom_rows:
+                            doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                        doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+                    if row_count > LARGE_TABLE_THRESHOLD:
+                        doc_file.write(f"      Meio ({SAMPLE_SIZE} registros):\n")
+                        offset = row_count // 2 - (SAMPLE_SIZE // 2) if row_count > SAMPLE_SIZE else 0
+                        if offset < 0: offset = 0
+                        cursor.execute(f"SELECT * FROM '{table_name}' LIMIT {SAMPLE_SIZE} OFFSET {offset}")
+                        middle_rows = cursor.fetchall()
+                        if middle_rows:
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                            doc_file.write("      | " + " | ".join([f'{header:<20}' for header in header_row]) + " |\n")
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+                            for row in middle_rows:
+                                doc_file.write("      | " + " | ".join([f'{str(item):<20}' for item in row]) + " |\n")
+                            doc_file.write("      " + "-"*(len(header_row) * 22 + 6) + "\n")
+
+
+        else:
+            doc_file.write(f"  Nenhuma tabela encontrada neste banco de dados.\n")
+
+
+    except sqlite3.Error as e:
+        doc_file.write(f"Erro ao analisar banco de dados SQLite '{filepath}': {e}\n")
+    finally:
+        if conn:
+            conn.close()
+
+def main():
+    root_dir = "."
+    print("â€šÃ¶Ã´Ã”âˆÃ¨ Iniciando AnâˆšÂ°lise do Projeto â€šÃ¶Ã´Ã”âˆÃ¨")
+
+    # Cria a pasta 'docs' se ela nâˆšÂ£o existir
+    if not os.path.exists(DOCS_FOLDER):
+        os.makedirs(DOCS_FOLDER)
+
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as doc_file:
+        doc_file.write(f"# DocumentaâˆšÃŸâˆšÂ£o do Projeto\n\n")
+        doc_file.write(f"Este documento foi gerado automaticamente pelo script `documentador_projeto.py`.\n\n")
+        doc_file.write(f"Data de GeraâˆšÃŸâˆšÂ£o: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        doc_file.write(f"Diretâˆšâ‰¥rio Raiz: {os.path.abspath(root_dir)}\n\n")
+        doc_file.write("="*80 + "\n")
+
+        for root, dirs, files in os.walk(root_dir):
+            for dir_name in dirs:
+                folder_path = os.path.join(root, dir_name)
+                doc_file.write(f"\nï£¿Ã¼Ã¬Ã‡ Pasta: {folder_path}\n")
+
+            for file_name in files:
+                filepath = os.path.join(root, file_name)
+                file_ext = file_name.lower().split('.')[-1]
+
+                doc_file.write(f"\nï£¿Ã¼Ã¬Ã‘ Arquivo: {filepath}\n")
+
+                file_info = get_file_info(filepath)
+                doc_file.write(f"  Tamanho: {file_info['tamanho_mb']} MB ({file_info['tamanho_kb']} KB, {file_info['tamanho_bytes']} bytes)\n")
+                doc_file.write(f"  Nâˆšâˆ«mero de Linhas: {file_info['numero_linhas']}\n")
+
+                if file_ext in ('py', 'txt', 'js', 'html', 'css', 'java', 'c', 'cpp', 'h', 'sh', 'sql', 'md'):
+                    doc_file.write(f"\n  Câˆšâ‰¥digo Fonte:\n")
+                    code_content = get_file_content_bruto(filepath)
+                    doc_file.write(code_content)
+                else:
+                    doc_file.write(f"  Conteâˆšâˆ«do nâˆšÂ£o textual ou extensâˆšÂ£o nâˆšÂ£o suportada para visualizaâˆšÃŸâˆšÂ£o do câˆšâ‰¥digo fonte.\n")
+
+                if file_ext in ('db', 'sqlite', 'sqlite3'):
+                    analyze_sqlite_db(filepath, doc_file)
+
+    print("â€šÃºÃ– DocumentaâˆšÃŸâˆšÂ£o Gerada com Sucesso! â€šÃºÃ–")
+    print(f"Arquivo de documentaâˆšÃŸâˆšÂ£o salvo em: {OUTPUT_FILE}")
+
+if __name__ == "__main__":
+    main()
+ğŸ“„ Arquivo: .\README.md
+  Tamanho: 0.00 MB (0.00 KB, 0 bytes)
+  NÃºmero de Linhas: 0
+
+  CÃ³digo Fonte:
+
+ğŸ“„ Arquivo: .\requirements.txt
+  Tamanho: 0.00 MB (0.16 KB, 167 bytes)
+  NÃºmero de Linhas: 10
+
+  CÃ³digo Fonte:
+fastapi
+uvicorn
+python-jose[cryptography]  
+cryptography              
+requests
+pytest
+colorama
+python-dotenv             
+pydantic                  
+inquirer
+ğŸ“„ Arquivo: .\app\API-main-server-mvp.py
+  Tamanho: 0.02 MB (24.25 KB, 24831 bytes)
+  NÃºmero de Linhas: 321
+
+  CÃ³digo Fonte:
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import logging
+import json
+from datetime import datetime, timedelta
+from typing import List, Optional, Any
+from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, ValidationError
+from jose import JWTError, jwt
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from bibliotecas.calc_numbers import Numbers
+SECRET_KEY = os.environ.get("API_SECRET_KEY", "Jump@d2025!!(SegredoSuperSeguroParaTesteAPI)")
+ALGORITHM = os.environ.get("API_JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("API_TOKEN_EXPIRY_MINUTES", "30"))
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token_admin")
+oauth2_scheme_tester = OAuth2PasswordBearer(tokenUrl="token_tester")
+RATE_LIMIT_REQUESTS_PER_MINUTE = int(os.environ.get("API_RATE_LIMIT", "200"))
+RATE_LIMIT_STORAGE = {}
+DIRETORIO_LOGS = os.environ.get("API_LOG_DIR", "logs")
+if not os.path.exists(DIRETORIO_LOGS):
+    os.makedirs(DIRETORIO_LOGS)
+ARQUIVO_LOG_API = os.path.join(DIRETORIO_LOGS, "api-logs.json")
+ARQUIVO_LOG_DETALHADO_API = os.path.join(DIRETORIO_LOGS, "api-detailed-logs.json")
+class FormatterColoridoSeguro(logging.Formatter):
+    CORES = {
+        'DEBUG': '\033[94m',    'INFO': '\033[92m',     'WARNING': '\033[93m',
+        'ERROR': '\033[91m',    'CRITICAL': '\033[97;41m', 'RESET': '\033[0m'
+    }
+    EMOJIS = {
+        'DEBUG': 'ï£¿Ã¼ÃªÃµ', 'INFO': 'â€šÃºÃ–', 'WARNING': 'â€šÃ¶â€ Ã”âˆÃ¨', 'ERROR': 'ï£¿Ã¼Ã®â€¢', 'CRITICAL': 'ï£¿Ã¼Ã¶Â®'
+    }
+    def format(self, record):
+        cor_log = self.CORES.get(record.levelname, self.CORES['INFO'])
+        reset_cor = self.CORES['RESET']
+        emoji = self.EMOJIS.get(record.levelname, '')
+        nivel_log = f"{cor_log}{record.levelname}{reset_cor}"
+        mensagem = f"{cor_log}{record.getMessage()}{reset_cor}"
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return f"{timestamp} - {emoji} {nivel_log} - {record.name}:{record.lineno} - {mensagem}"
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(FormatterColoridoSeguro())
+api_log_handler = logging.FileHandler(ARQUIVO_LOG_API, encoding='utf-8')
+api_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s", "detalhes": %(log_record_json)s}')
+api_log_handler.setFormatter(api_log_formatter)
+api_detailed_log_handler = logging.FileHandler(ARQUIVO_LOG_DETALHADO_API, encoding='utf-8')
+api_detailed_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "line": "%(lineno)d", "message": "%(message)s", "record": %(log_record_json)s}')
+api_detailed_log_handler.setFormatter(api_detailed_log_formatter)
+logger_app = logging.getLogger("api_server")
+logger_app.setLevel(logging.DEBUG)
+logger_app.addHandler(console_handler)
+logger_app.addHandler(api_log_handler)
+logger_app.addHandler(api_detailed_log_handler)
+app = FastAPI(title="API MatemâˆšÂ°tica Segura", description="API RESTful para operaâˆšÃŸâˆšÂµes de soma e mâˆšÂ©dia - SEGURA (Nâˆšâ‰ vel MâˆšÂ°ximo)", version="0.9.3", default_response_class=JSONResponse)
+origins_permitidas = os.environ.get("API_CORS_ORIGINS", "http://localhost").split(",")
+class NumerosEntrada(BaseModel):
+    numeros: List[int]
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"numeros": [1, 2, 3, 4]}
+            ]
+        }
+    }
+class TokenRequest(BaseModel):
+    username: str
+    password: str
+class SomaResponse(BaseModel):
+    resultado: int
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"resultado": 10, "mensagem": "OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"}
+            ]
+        }
+class MediaResponse(BaseModel):
+    media: Optional[float] = None
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"media": 2.5, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"}
+            ]
+        }
+class SaudeResponse(BaseModel):
+    status: str
+    mensagem: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"status": "OK", "mensagem": "API estâˆšÂ° saudâˆšÂ°vel e SEGURA"}
+            ]
+        }
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    nivel_acesso: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "token_type": "bearer", "nivel_acesso": "admin"}
+            ]
+        }
+class ErrorResponse(BaseModel):
+    erro: str
+    detalhes: Any
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"erro": "Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada", "detalhes": "A lista de nâˆšâˆ«meros nâˆšÂ£o pode estar vazia."}
+            ]
+        }
+def gerar_token_jwt(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+        to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+def verificar_token_jwt(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+async def obter_usuario_atual_jwt(token: str = Depends(oauth2_scheme)):
+    logger_app.debug(f"ï£¿Ã¼Ã®Ã­ Validando Token JWT (ADMIN): {token[:10]}...", extra={'log_record_json': {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("â€šÃ¶â€ Ã”âˆÃ¨ Token JWT invâˆšÂ°lido ou expirado (ADMIN). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_admin"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais invâˆšÂ°lidas. Token JWT ausente, invâˆšÂ°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+async def obter_usuario_tester_jwt(token: str = Depends(oauth2_scheme_tester)):
+    logger_app.debug(f"ï£¿Ã¼Ã®Ã­ Validando Token JWT (TESTER): {token[:10]}...", extra={'log_record_json':  {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("â€šÃ¶â€ Ã”âˆÃ¨ Token JWT invâˆšÂ°lido ou expirado (TESTER). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_tester"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais invâˆšÂ°lidas. Token JWT de tester ausente, invâˆšÂ°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+@app.post("/token_admin", tags=["autenticaâˆšÃŸâˆšÂ£o_segura"], response_model=TokenResponse, summary="Gera token JWT seguro (credenciais 'admin/admin')")
+async def gerar_token_admin_seguro(token_request: TokenRequest):
+    logger_app.info(f"ï£¿Ã¼Ã®Ã« RequisiâˆšÃŸâˆšÂ£o para gerar token JWT (ADMIN) recebida para usuâˆšÂ°rio: '{token_request.username}'", extra={'log_record_json': {"username": token_request.username}})
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    try:
+        with open(ADMIN_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_admin = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Arquivo de credenciais admin nâˆšÂ£o encontrado: '{ADMIN_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais nâˆšÂ£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro ao decodificar JSON do arquivo de credenciais: '{ADMIN_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": ADMIN_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais.")
+    if token_request.username == usuario_admin["username"] and token_request.password == usuario_admin["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": token_request.username, "nivel_acesso": "admin"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Token JWT (ADMIN) gerado com sucesso para usuâˆšÂ°rio 'admin'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "admin", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "admin"}
+    else:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Falha na autenticaâˆšÃŸâˆšÂ£o (ADMIN) para usuâˆšÂ°rio '{token_request.username}'. Credenciais invâˆšÂ°lidas.", extra={'log_record_json': {"username": token_request.username}})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais de administrador incorretas.")
+@app.post("/token_tester", tags=["autenticaâˆšÃŸâˆšÂ£o_segura_tester"], response_model=TokenResponse, summary="Gera token JWT seguro para TESTER (credenciais 'tester/tester')")
+async def gerar_token_seguro_tester(form_data: OAuth2PasswordRequestForm = Depends()):
+    logger_app.info(f"ï£¿Ã¼Ã®Ã« RequisiâˆšÃŸâˆšÂ£o para gerar token JWT (TESTER) recebida para usuâˆšÂ°rio: '{form_data.username}'", extra={'log_record_json': {"username": form_data.username}})
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    try:
+        with open(TESTER_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_tester = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Arquivo de credenciais tester nâˆšÂ£o encontrado: '{TESTER_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": TESTER_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais de tester nâˆšÂ£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro ao decodificar JSON do arquivo de credenciais tester: '{TESTER_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": TESTER_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais de tester.")
+    if form_data.username == usuario_tester["username"] and form_data.password == usuario_tester["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": form_data.username, "nivel_acesso": "tester"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Token JWT (TESTER) gerado com sucesso para usuâˆšÂ°rio 'tester'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "tester", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "tester"}
+    else:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ RequisiâˆšÃŸâˆšÂ£o para /token_tester com credenciais de tester invâˆšÂ°lidas (IGNORADO para testes API).", extra={'log_record_json': {"username": form_data.username}})
+        return {"access_token": "TOKEN_INVALIDO_PARA_TESTE", "token_type": "bearer", "nivel_acesso": "tester"}
+@app.post("/somar", tags=["matemâˆšÂ°tica_segura"], summary="Soma um vetor de nâˆšâˆ«meros inteiros (PROTEGIDO)", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=SomaResponse, response_class=JSONResponse)
+async def somar_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)):
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, UsuâˆšÂ°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, Nâˆšâ‰ vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"â€šÃ»Â°Ã”âˆÃ¨  RequisiâˆšÃŸâˆšÂ£o POST em '/somar' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"ï£¿Ã¼Ã¬Â¶ Corpo da requisiâˆšÃŸâˆšÂ£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_soma = instancia_numeros.sum_numbers(lista_numeros)
+        conteudo_resposta = {"resultado": resultado_soma, "mensagem": "OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"â€šÃ»Ã¯ OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida. Resultado: {resultado_soma} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_soma": resultado_soma, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada para '/somar': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ Erro de tipo de dados na biblioteca calc_numbers para '/somar': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ ExceâˆšÃŸâˆšÂ£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de ValidaâˆšÃŸâˆšÂ£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro Crâˆšâ‰ tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+@app.post("/calcular_media", tags=["matemâˆšÂ°tica_segura"], summary="Calcula a mâˆšÂ©dia de um vetor de nâˆšâˆ«meros inteiros (PROTEGIDO)", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=MediaResponse, response_class=JSONResponse)
+async def calcular_media_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)):
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, UsuâˆšÂ°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, Nâˆšâ‰ vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"â€šÃ»Â°Ã”âˆÃ¨  RequisiâˆšÃŸâˆšÂ£o POST em '/calcular_media' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"ï£¿Ã¼Ã¬Â¶ Corpo da requisiâˆšÃŸâˆšÂ£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_media = instancia_numeros.calculate_average(lista_numeros)
+        if resultado_media is None:
+            return {"media": None, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida para lista vazia", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        conteudo_resposta = {"media": resultado_media, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"â€šÃ»Ã³ OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida. MâˆšÂ©dia: {resultado_media} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_media": resultado_media, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada para '/calcular_media': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ Erro de tipo de dados na biblioteca calc_numbers para '/calcular_media': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ ExceâˆšÃŸâˆšÂ£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de ValidaâˆšÃŸâˆšÂ£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro Crâˆšâ‰ tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+@app.get("/saude", tags=["sistema_seguro"], summary="Endpoint para verificar a saâˆšâˆ«de da API (PâˆšÃ¶BLICO)", response_class=JSONResponse, response_model=SaudeResponse)
+async def verificar_saude_segura():
+    timestamp = datetime.now().isoformat()
+    saude_template = {
+        "status": "OK",
+        "version": "0.9.3",
+        "ambiente": os.environ.get("API_ENVIRONMENT", "Desenvolvimento"),
+        "timestamp": timestamp,
+        "mensagem": "API MatemâˆšÂ°tica Segura estâˆšÂ° operacional e respondendo.",
+        "detalhes": {
+            "servidor": "FastAPI",
+            "seguranca": "JWT, HTTPS, Rate Limiting",
+            "logs": "Detalhado em JSON"
+        },
+        "status_code": 200,
+        "emoji_status": "ï£¿Ã¼Ã¶Ã„",
+        "indicador_saude": "ï£¿Ã¼Ã­Ã¶ âˆšÃ¬timo"
+    }
+    return saude_template
+if __name__ == "__main__":
+    import uvicorn
+    CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+    os.makedirs(CREDENTIALS_DIR, exist_ok=True)
+    CERT_FILE = os.path.join(CREDENTIALS_DIR, "certificado.pem")
+    KEY_FILE = os.path.join(CREDENTIALS_DIR, "chave.pem")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
+        logger_app.info("ï£¿Ã¼Ã®Ã« Gerando certificados autoassinados para HTTPS...", extra={'log_record_json': {"acao": "geracao_certificados_https"}})
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+        subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+        builder = x509.CertificateBuilder().subject_name(subject).issuer_name(subject).public_key(private_key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(datetime.utcnow()).not_valid_after(datetime.utcnow() + timedelta(days=365)).add_extension(x509.SubjectAlternativeName([x509.DNSName("localhost")]), critical=False)
+        certificate = builder.sign(private_key, hashes.SHA256(), default_backend())
+        with open(KEY_FILE, "wb") as key_f:
+            key_f.write(private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+        with open(CERT_FILE, "wb") as cert_f:
+            cert_f.write(certificate.public_bytes(serialization.Encoding.PEM))
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Certificados autoassinados gerados e salvos em: '{CREDENTIALS_DIR}/'", extra={'log_record_json': {"acao": "certificados_salvos", "diretorio": CREDENTIALS_DIR}})
+    else:
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Certificados HTTPS autoassinados jâˆšÂ° existentes em: '{CREDENTIALS_DIR}/'. Usando existentes.", extra={'log_record_json': {"acao": "certificados_existentes", "diretorio": CREDENTIALS_DIR}})
+    if not os.path.exists(ADMIN_CREDENTIALS_FILE):
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Criando arquivo de credenciais admin padrâˆšÂ£o: '{ADMIN_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_admin", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        admin_creds = {"username": "admin", "password": "admin"}
+        with open(ADMIN_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(admin_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais admin padrâˆšÂ£o criado.", extra={'log_record_json': {"acao": "creds_admin_criadas_sucesso", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais admin jâˆšÂ° existente: '{ADMIN_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_admin_existentes", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    if not os.path.exists(TESTER_CREDENTIALS_FILE):
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Criando arquivo de credenciais tester padrâˆšÂ£o: '{TESTER_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_tester", "arquivo": TESTER_CREDENTIALS_FILE}})
+        tester_creds = {"username": "tester", "password": "tester"}
+        with open(TESTER_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(tester_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais tester padrâˆšÂ£o criado.", extra={'log_record_json': {"acao": "creds_tester_criadas_sucesso", "arquivo": TESTER_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais tester jâˆšÂ° existente: '{TESTER_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_tester_existentes", "arquivo": TESTER_CREDENTIALS_FILE}})
+    uvicorn.run(app, host="0.0.0.0", port=8882, ssl_certfile=CERT_FILE, ssl_keyfile=KEY_FILE)
+ğŸ“„ Arquivo: .\app\API-main-server-prod.py
+  Tamanho: 0.03 MB (27.37 KB, 28030 bytes)
+  NÃºmero de Linhas: 383
+
+  CÃ³digo Fonte:
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import logging
+import json
+from datetime import datetime, timedelta
+from typing import List, Optional, Any
+from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, ValidationError
+from jose import JWTError, jwt
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from bibliotecas.calc_numbers import Numbers
+
+# â€šÃ¶Ã´Ã”âˆÃ¨ ConfiguraâˆšÃŸâˆšÂµes da API (variâˆšÂ°veis de ambiente ou valores padrâˆšÂ£o)
+SECRET_KEY = os.environ.get("API_SECRET_KEY", "Jump@d2025!!(SegredoSuperSeguroParaTesteAPI)")
+ALGORITHM = os.environ.get("API_JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("API_TOKEN_EXPIRY_MINUTES", "30"))
+RATE_LIMIT_REQUESTS_PER_MINUTE = int(os.environ.get("API_RATE_LIMIT", "200"))
+DIRETORIO_LOGS = os.environ.get("API_LOG_DIR", "logs")
+CREDENTIALS_DIR = os.environ.get("API_CREDENTIALS_DIR", "credentials")
+origins_permitidas = os.environ.get("API_CORS_ORIGINS", "http://localhost").split(",")
+
+# ï£¿Ã¼Ã®Ã« Esquemas de seguranâˆšÃŸa OAuth2 para tokens JWT
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token_admin") # ï£¿Ã¼ÃµÂ°Ã”âˆÃ¨ Define esquema de seguranâˆšÃŸa para token de admin
+oauth2_scheme_tester = OAuth2PasswordBearer(tokenUrl="token_tester") # ï£¿Ã¼ÃµÂ°Ã”âˆÃ¨ Define esquema de seguranâˆšÃŸa para token de tester
+
+# ï£¿Ã¼â„¢Âµ ConfiguraâˆšÃŸâˆšÂ£o de Logging (logs coloridos no console e logs JSON em arquivos)
+if not os.path.exists(DIRETORIO_LOGS):
+    os.makedirs(DIRETORIO_LOGS)
+ARQUIVO_LOG_API = os.path.join(DIRETORIO_LOGS, "api-logs.json")
+ARQUIVO_LOG_DETALHADO_API = os.path.join(DIRETORIO_LOGS, "api-detailed-logs.json")
+
+class FormatterColoridoSeguro(logging.Formatter): # â€šÃºÂ® Formatter para logs coloridos no console
+    CORES = {
+        'DEBUG': '\033[94m',    'INFO': '\033[92m',     'WARNING': '\033[93m',
+        'ERROR': '\033[91m',    'CRITICAL': '\033[97;41m', 'RESET': '\033[0m'
+    }
+    EMOJIS = {
+        'DEBUG': 'ï£¿Ã¼ÃªÃµ', 'INFO': 'â€šÃºÃ–', 'WARNING': 'â€šÃ¶â€ Ã”âˆÃ¨', 'ERROR': 'ï£¿Ã¼Ã®â€¢', 'CRITICAL': 'ï£¿Ã¼Ã¶Â®'
+    }
+    def format(self, record):
+        cor_log = self.CORES.get(record.levelname, self.CORES['INFO'])
+        reset_cor = self.CORES['RESET']
+        emoji = self.EMOJIS.get(record.levelname, '')
+        nivel_log = f"{cor_log}{record.levelname}{reset_cor}"
+        mensagem = f"{cor_log}{record.getMessage()}{reset_cor}"
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return f"{timestamp} - {emoji} {nivel_log} - {record.name}:{record.lineno} - {mensagem}"
+
+console_handler = logging.StreamHandler() # â€šÃºÃ§Ã”âˆÃ¨ Handler para logs no console
+console_handler.setFormatter(FormatterColoridoSeguro())
+api_log_handler = logging.FileHandler(ARQUIVO_LOG_API, encoding='utf-8') # â€šÃºÃ§Ã”âˆÃ¨ Handler para logs JSON resumidos
+api_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s", "detalhes": %(log_record_json)s}')
+api_log_handler.setFormatter(api_log_formatter)
+api_detailed_log_handler = logging.FileHandler(ARQUIVO_LOG_DETALHADO_API, encoding='utf-8') # â€šÃºÃ§Ã”âˆÃ¨ Handler para logs JSON detalhados
+api_detailed_log_formatter = logging.Formatter('{"timestamp": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "line": "%(lineno)d", "message": "%(message)s", "record": %(log_record_json)s}')
+api_detailed_log_handler.setFormatter(api_detailed_log_formatter)
+
+logger_app = logging.getLogger("api_server") # ï£¿Ã¼â„¢Âµ Logger principal da aplicaâˆšÃŸâˆšÂ£o
+logger_app.setLevel(logging.DEBUG)
+logger_app.addHandler(console_handler)
+logger_app.addHandler(api_log_handler)
+logger_app.addHandler(api_detailed_log_handler)
+
+# ï£¿Ã¼Ã¶Ã„ InicializaâˆšÃŸâˆšÂ£o da AplicaâˆšÃŸâˆšÂ£o FastAPI
+app = FastAPI(
+    title="API MatemâˆšÂ°tica Segura",
+    description="API RESTful para operaâˆšÃŸâˆšÂµes de soma e mâˆšÂ©dia - SEGURA (Nâˆšâ‰ vel MâˆšÂ°ximo) com autenticaâˆšÃŸâˆšÂ£o JWT e HTTPS.",
+    version="0.9.3"
+)
+
+# â€šÃœÃ®Ã”âˆÃ¨ ConfiguraâˆšÃŸâˆšÂ£o de CORS (Cross-Origin Resource Sharing) - Ajuste 'origins_permitidas' conforme necessâˆšÂ°rio
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins_permitidas,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ï£¿Ã¼ÃµÂ°Ã”âˆÃ¨ Modelos de Dados (Pydantic) para ValidaâˆšÃŸâˆšÂ£o e DocumentaâˆšÃŸâˆšÂ£o AutomâˆšÂ°tica
+
+class NumerosEntrada(BaseModel): # Modelo para lista de nâˆšâˆ«meros na requisiâˆšÃŸâˆšÂ£o
+    numeros: List[int]
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"numeros": [1, 2, 3, 4]} # Exemplo para documentaâˆšÃŸâˆšÂ£o Swagger/ReDoc
+            ]
+        }
+    }
+
+class TokenRequest(BaseModel): # Modelo para requisiâˆšÃŸâˆšÂ£o de token
+    username: str
+    password: str
+
+class TokenResponse(BaseModel): # Modelo para resposta de token JWT
+    access_token: str
+    token_type: str
+    nivel_acesso: str
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "token_type": "bearer", "nivel_acesso": "admin"} # Exemplo token
+            ]
+        }
+    }
+
+class SomaResponse(BaseModel): # Modelo para resposta da rota /somar
+    resultado: int
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"resultado": 10, "mensagem": "OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"} # Exemplo soma
+            ]
+        }
+
+class MediaResponse(BaseModel): # Modelo para resposta da rota /calcular_media
+    media: Optional[float] = None
+    mensagem: str
+    numeros_entrada: List[int]
+    usuario: Optional[str] = None
+    nivel_acesso: Optional[str] = None
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"media": 2.5, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida", "numeros_entrada": [1, 2, 3, 4], "usuario": "admin", "nivel_acesso": "admin"} # Exemplo mâˆšÂ©dia
+            ]
+        }
+
+class SaudeResponse(BaseModel): # Modelo para resposta da rota /saude
+    status: str
+    mensagem: str
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"status": "OK", "mensagem": "API estâˆšÂ° saudâˆšÂ°vel e SEGURA"} # Exemplo saâˆšâˆ«de
+            ]
+        }
+
+class ErrorResponse(BaseModel): # Modelo para respostas de erro
+    erro: str
+    detalhes: Any
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {"erro": "Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada", "detalhes": "A lista de nâˆšâˆ«meros nâˆšÂ£o pode estar vazia."} # Exemplo erro
+            ]
+        }
+
+# ï£¿Ã¼Ã®Ã« FunâˆšÃŸâˆšÂµes de SeguranâˆšÃŸa (JWT - JSON Web Tokens)
+
+def gerar_token_jwt(data: dict, expires_delta: Optional[timedelta] = None) -> str: # ï£¿Ã¼Ã®Ã« Gera token JWT
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+        to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verificar_token_jwt(token: str) -> Optional[dict]: # â€šÃºÃ– Verifica e decodifica token JWT
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+async def obter_usuario_atual_jwt(token: str = Depends(oauth2_scheme)) -> dict: # ï£¿Ã¼ÃµÂ°Ã”âˆÃ¨ Dependâˆšâ„¢ncia para obter usuâˆšÂ°rio ADMIN atual via JWT
+    logger_app.debug(f"ï£¿Ã¼Ã®Ã­ Validando Token JWT (ADMIN): {token[:10]}...", extra={'log_record_json': {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("â€šÃ¶â€ Ã”âˆÃ¨ Token JWT invâˆšÂ°lido ou expirado (ADMIN). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_admin"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais invâˆšÂ°lidas. Token JWT ausente, invâˆšÂ°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+
+async def obter_usuario_tester_jwt(token: str = Depends(oauth2_scheme_tester)) -> dict: # ï£¿Ã¼ÃµÂ°Ã”âˆÃ¨ Dependâˆšâ„¢ncia para obter usuâˆšÂ°rio TESTER atual via JWT
+    logger_app.debug(f"ï£¿Ã¼Ã®Ã­ Validando Token JWT (TESTER): {token[:10]}...", extra={'log_record_json':  {"token_prefix": token[:10]}})
+    payload = verificar_token_jwt(token)
+    if payload is None:
+        logger_app.warning("â€šÃ¶â€ Ã”âˆÃ¨ Token JWT invâˆšÂ°lido ou expirado (TESTER). Acesso negado.", extra={'log_record_json': {"status_auth": "falha_token_invalido_tester"}})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciais invâˆšÂ°lidas. Token JWT de tester ausente, invâˆšÂ°lido ou expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+
+# ï£¿Ã¼Ã®Ã« Endpoints de AutenticaâˆšÃŸâˆšÂ£o Segura (JWT)
+
+@app.post("/token_admin", tags=["autenticaâˆšÃŸâˆšÂ£o_segura"], response_model=TokenResponse, summary="Gera token JWT seguro para Administradores", description="Endpoint para gerar um token JWT de acesso com nâˆšâ‰ vel 'admin'. Requer credenciais de administrador.")
+async def gerar_token_admin_seguro(token_request: TokenRequest): # ï£¿Ã¼Ã®Ã« Rota para gerar token JWT de ADMIN
+    logger_app.info(f"ï£¿Ã¼Ã®Ã« RequisiâˆšÃŸâˆšÂ£o para gerar token JWT (ADMIN) recebida para usuâˆšÂ°rio: '{token_request.username}'", extra={'log_record_json': {"username": token_request.username}})
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    try:
+        with open(ADMIN_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_admin = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Arquivo de credenciais admin nâˆšÂ£o encontrado: '{ADMIN_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais nâˆšÂ£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro ao decodificar JSON do arquivo de credenciais: '{ADMIN_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": ADMIN_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais.")
+    if token_request.username == usuario_admin["username"] and token_request.password == usuario_admin["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": token_request.username, "nivel_acesso": "admin"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Token JWT (ADMIN) gerado com sucesso para usuâˆšÂ°rio 'admin'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "admin", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "admin"}
+    else:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Falha na autenticaâˆšÃŸâˆšÂ£o (ADMIN) para usuâˆšÂ°rio '{token_request.username}'. Credenciais invâˆšÂ°lidas.", extra={'log_record_json': {"username": token_request.username}})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais de administrador incorretas.")
+
+@app.post("/token_tester", tags=["autenticaâˆšÃŸâˆšÂ£o_segura_tester"], response_model=TokenResponse, summary="Gera token JWT seguro para Testers", description="Endpoint para gerar um token JWT de acesso com nâˆšâ‰ vel 'tester'. Requer credenciais de tester.")
+async def gerar_token_seguro_tester(form_data: OAuth2PasswordRequestForm = Depends()): # ï£¿Ã¼Ã®Ã« Rota para gerar token JWT de TESTER
+    logger_app.info(f"ï£¿Ã¼Ã®Ã« RequisiâˆšÃŸâˆšÂ£o para gerar token JWT (TESTER) recebida para usuâˆšÂ°rio: '{form_data.username}'", extra={'log_record_json': {"username": form_data.username}})
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+    try:
+        with open(TESTER_CREDENTIALS_FILE, "r", encoding='utf-8') as f:
+            usuario_tester = json.load(f)
+    except FileNotFoundError:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Arquivo de credenciais tester nâˆšÂ£o encontrado: '{TESTER_CREDENTIALS_FILE}'.", extra={'log_record_json': {"erro": "FileNotFoundError", "arquivo": TESTER_CREDENTIALS_FILE}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Arquivo de credenciais de tester nâˆšÂ£o encontrado.")
+    except json.JSONDecodeError as e:
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro ao decodificar JSON do arquivo de credenciais tester: '{TESTER_CREDENTIALS_FILE}'. Detalhes: {e}", extra={'log_record_json': {"erro": "JSONDecodeError", "arquivo": TESTER_CREDENTIALS_FILE, "detalhe_erro": str(e)}})
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno: Falha ao ler arquivo de credenciais de tester.")
+    if form_data.username == usuario_tester["username"] and form_data.password == usuario_tester["password"]:
+        tempo_expiracao_token = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        token_jwt = gerar_token_jwt(data={"sub": form_data.username, "nivel_acesso": "tester"}, expires_delta=tempo_expiracao_token)
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Token JWT (TESTER) gerado com sucesso para usuâˆšÂ°rio 'tester'. Expira em {ACCESS_TOKEN_EXPIRE_MINUTES} minutos.", extra={'log_record_json': {"usuario": "tester", "expira_em_minutos": ACCESS_TOKEN_EXPIRE_MINUTES}})
+        return {"access_token": token_jwt, "token_type": "bearer", "nivel_acesso": "tester"}
+    else:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ RequisiâˆšÃŸâˆšÂ£o para /token_tester com credenciais de tester invâˆšÂ°lidas (IGNORADO para testes API).", extra={'log_record_json': {"username": form_data.username}})
+        return {"access_token": "TOKEN_INVALIDO_PARA_TESTE", "token_type": "bearer", "nivel_acesso": "tester"}
+
+# â€šÃ»Ã¯ Endpoints de OperaâˆšÃŸâˆšÂµes MatemâˆšÂ°ticas (PROTEGIDOS por JWT)
+
+@app.post("/somar", tags=["matemâˆšÂ°tica_segura"], summary="Soma um vetor de nâˆšâˆ«meros inteiros", description="Endpoint PROTEGIDO que realiza a soma de uma lista de nâˆšâˆ«meros inteiros fornecida no corpo da requisiâˆšÃŸâˆšÂ£o. Requer token JWT de administrador vâˆšÂ°lido.", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=SomaResponse, response_class=JSONResponse)
+async def somar_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)): # â€šÃ»Ã¯ Rota para somar vetor (PROTEGIDA)
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, UsuâˆšÂ°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, Nâˆšâ‰ vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"â€šÃ»Â°Ã”âˆÃ¨  RequisiâˆšÃŸâˆšÂ£o POST em '/somar' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"ï£¿Ã¼Ã¬Â¶ Corpo da requisiâˆšÃŸâˆšÂ£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_soma = instancia_numeros.sum_numbers(lista_numeros)
+        conteudo_resposta = {"resultado": resultado_soma, "mensagem": "OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"â€šÃ»Ã¯ OperaâˆšÃŸâˆšÂ£o de soma bem-sucedida. Resultado: {resultado_soma} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_soma": resultado_soma, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada para '/somar': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ Erro de tipo de dados na biblioteca calc_numbers para '/somar': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ ExceâˆšÃŸâˆšÂ£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de ValidaâˆšÃŸâˆšÂ£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro Crâˆšâ‰ tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+
+@app.post("/calcular_media", tags=["matemâˆšÂ°tica_segura"], summary="Calcula a mâˆšÂ©dia de um vetor de nâˆšâˆ«meros inteiros", description="Endpoint PROTEGIDO que calcula a mâˆšÂ©dia de uma lista de nâˆšâˆ«meros inteiros fornecida. Requer token JWT de administrador vâˆšÂ°lido.", dependencies=[Depends(obter_usuario_atual_jwt)], response_model=MediaResponse, response_class=JSONResponse)
+async def calcular_media_vetor(request: Request, numeros_entrada: NumerosEntrada, usuario: dict = Depends(obter_usuario_atual_jwt)): # â€šÃ»Ã³ Rota para calcular mâˆšÂ©dia vetor (PROTEGIDA)
+    detalhes_requisicao = f"Cliente: {request.client.host if request.client else 'desconhecido'}, URL: {request.url.path}, UsuâˆšÂ°rio JWT (ADMIN): {usuario.get('sub') if usuario else 'desconhecido'}, Nâˆšâ‰ vel Acesso: {usuario.get('nivel_acesso') if usuario else 'desconhecido'}, HTTPS={request.url.scheme == 'https'}, Rate Limited=SIM"
+    logger_app.info(f"â€šÃ»Â°Ã”âˆÃ¨  RequisiâˆšÃŸâˆšÂ£o POST em '/calcular_media' (PROTEGIDO) de {detalhes_requisicao}", extra={'log_record_json': {}})
+    try:
+        lista_numeros = numeros_entrada.numeros
+        logger_app.debug(f"ï£¿Ã¼Ã¬Â¶ Corpo da requisiâˆšÃŸâˆšÂ£o JSON recebido e VALIDADO (Pydantic): {lista_numeros}", extra={'log_record_json': {"numeros_entrada": lista_numeros}})
+        instancia_numeros = Numbers()
+        resultado_media = instancia_numeros.calculate_average(lista_numeros)
+        if resultado_media is None:
+            return {"media": None, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida para lista vazia", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        conteudo_resposta = {"media": resultado_media, "mensagem": "OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida", "numeros_entrada": lista_numeros, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}
+        logger_app.info(f"â€šÃ»Ã³ OperaâˆšÃŸâˆšÂ£o de mâˆšÂ©dia bem-sucedida. MâˆšÂ©dia: {resultado_media} - {detalhes_requisicao}", extra={'log_record_json': {"resultado_media": resultado_media, "usuario": usuario.get('sub'), "nivel_acesso": usuario.get('nivel_acesso')}})
+        return conteudo_resposta
+    except ValueError as e_calc_value:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de validaâˆšÃŸâˆšÂ£o nos dados de entrada para '/calcular_media': {e_calc_value} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_value)}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e_calc_value))
+    except TypeError as e_calc_type:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ Erro de tipo de dados na biblioteca calc_numbers para '/calcular_media': {e_calc_type} - {detalhes_requisicao}", extra={'log_record_json': {"erro_biblioteca": str(e_calc_type)}})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e_calc_type))
+    except HTTPException as exc_http:
+        logger_app.error(f"ï£¿Ã¼Ã®â€¢ ExceâˆšÃŸâˆšÂ£o HTTP: {exc_http.detail} - Status Code: {exc_http.status_code} - {detalhes_requisicao}", extra={'log_record_json': {"erro_http": exc_http.detail, "status_code": exc_http.status_code}})
+        raise JSONResponse(status_code=exc_http.status_code, content={"erro": exc_http.detail})
+    except ValidationError as ve:
+        logger_app.warning(f"â€šÃ¶â€ Ã”âˆÃ¨ Erro de ValidaâˆšÃŸâˆšÂ£o de Entrada (Pydantic): {ve.errors()} - {detalhes_requisicao}", extra={'log_record_json': {"erro_validacao": ve.errors()}})
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=ve.errors())
+    except Exception as e:
+        msg_detalhe_erro = f"Erro inesperado no servidor: {str(e)}"
+        logger_app.critical(f"ï£¿Ã¼Ã­â€¢ Erro Crâˆšâ‰ tico no Servidor: {msg_detalhe_erro} - {detalhes_requisicao}", exc_info=True, extra={'log_record_json': {"erro_servidor": msg_detalhe_erro, "exception": str(e)}})
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"erro": "Erro interno do servidor", "detalhes": msg_detalhe_erro})
+
+# ï£¿Ã¼Â©âˆ« Endpoint de Saâˆšâˆ«de da API (PâˆšÃ¶BLICO - Sem AutenticaâˆšÃŸâˆšÂ£o)
+
+@app.get("/saude", tags=["sistema_seguro"], summary="Verifica a saâˆšâˆ«de da API", description="Endpoint PâˆšÃ¶BLICO para verificar se a API estâˆšÂ° online e funcionando corretamente.", response_class=JSONResponse, response_model=SaudeResponse)
+async def verificar_saude_segura(): # ï£¿Ã¼Â©âˆ« Rota de saâˆšâˆ«de da API (PâˆšÃ¶BLICA)
+    timestamp = datetime.now().isoformat()
+    saude_template = {
+        "status": "OK",
+        "version": "0.9.3",
+        "ambiente": os.environ.get("API_ENVIRONMENT", "Desenvolvimento"),
+        "timestamp": timestamp,
+        "mensagem": "API MatemâˆšÂ°tica Segura estâˆšÂ° operacional e respondendo.",
+        "detalhes": {
+            "servidor": "FastAPI",
+            "seguranca": "JWT, HTTPS, Rate Limiting",
+            "logs": "Detalhado em JSON"
+        },
+        "status_code": 200,
+        "emoji_status": "ï£¿Ã¼Ã¶Ã„",
+        "indicador_saude": "ï£¿Ã¼Ã­Ã¶ âˆšÃ¬timo"
+    }
+    return saude_template
+
+# â€šÃ¶Ã´Ã”âˆÃ¨ ExecuâˆšÃŸâˆšÂ£o do Servidor Uvicorn (HTTPS)
+if __name__ == "__main__":
+    import uvicorn
+
+    # ï£¿Ã¼Ã®Ã« Cria diretâˆšâ‰¥rio para credenciais e certificados se nâˆšÂ£o existirem
+    os.makedirs(CREDENTIALS_DIR, exist_ok=True)
+    CERT_FILE = os.path.join(CREDENTIALS_DIR, "certificado.pem")
+    KEY_FILE = os.path.join(CREDENTIALS_DIR, "chave.pem")
+    ADMIN_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "admin_credentials.json")
+    TESTER_CREDENTIALS_FILE = os.path.join(CREDENTIALS_DIR, "tester_credentials.json")
+
+    # ï£¿Ã¼Ã®Ã« Gera certificados autoassinados HTTPS se nâˆšÂ£o existirem
+    if not os.path.exists(CERT_FILE) or not os.path.exists(KEY_FILE):
+        logger_app.info("ï£¿Ã¼Ã®Ã« Gerando certificados autoassinados para HTTPS...", extra={'log_record_json': {"acao": "geracao_certificados_https"}})
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+        subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+        builder = x509.CertificateBuilder().subject_name(subject).issuer_name(subject).public_key(private_key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(datetime.utcnow()).not_valid_after(datetime.utcnow() + timedelta(days=365)).add_extension(x509.SubjectAlternativeName([x509.DNSName("localhost")]), critical=False)
+        certificate = builder.sign(private_key, hashes.SHA256(), default_backend())
+        with open(KEY_FILE, "wb") as key_f:
+            key_f.write(private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+        with open(CERT_FILE, "wb") as cert_f:
+            cert_f.write(certificate.public_bytes(serialization.Encoding.PEM))
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Certificados autoassinados gerados e salvos em: '{CREDENTIALS_DIR}/'", extra={'log_record_json': {"acao": "certificados_salvos", "diretorio": CREDENTIALS_DIR}})
+    else:
+        logger_app.info(f"ï£¿Ã¼Ã®Ã« Certificados HTTPS autoassinados jâˆšÂ° existentes em: '{CREDENTIALS_DIR}/'. Usando existentes.", extra={'log_record_json': {"acao": "certificados_existentes", "diretorio": CREDENTIALS_DIR}})
+
+    # â€šÃ¶Ã´Ã”âˆÃ¨ Cria arquivos de credenciais padrâˆšÂ£o (admin/admin, tester/tester) se nâˆšÂ£o existirem
+    if not os.path.exists(ADMIN_CREDENTIALS_FILE):
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Criando arquivo de credenciais admin padrâˆšÂ£o: '{ADMIN_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_admin", "arquivo": ADMIN_CREDENTIALS_FILE}})
+        admin_creds = {"username": "admin", "password": "admin"}
+        with open(ADMIN_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(admin_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais admin padrâˆšÂ£o criado.", extra={'log_record_json': {"acao": "creds_admin_criadas_sucesso", "arquivo": ADMIN_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais admin jâˆšÂ° existente: '{ADMIN_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_admin_existentes", "arquivo": ADMIN_CREDENTIALS_FILE}})
+
+    if not os.path.exists(TESTER_CREDENTIALS_FILE):
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Criando arquivo de credenciais tester padrâˆšÂ£o: '{TESTER_CREDENTIALS_FILE}'...", extra={'log_record_json': {"acao": "criacao_creds_tester", "arquivo": TESTER_CREDENTIALS_FILE}})
+        tester_creds = {"username": "tester", "password": "tester"}
+        with open(TESTER_CREDENTIALS_FILE, "w", encoding='utf-8') as f:
+            json.dump(tester_creds, f, indent=4, ensure_ascii=False)
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais tester padrâˆšÂ£o criado.", extra={'log_record_json': {"acao": "creds_tester_criadas_sucesso", "arquivo": TESTER_CREDENTIALS_FILE}})
+    else:
+        logger_app.info(f"â€šÃ¶Ã´Ã”âˆÃ¨  Arquivo de credenciais tester jâˆšÂ° existente: '{TESTER_CREDENTIALS_FILE}'. Usando existente.", extra={'log_record_json': {"acao": "creds_tester_existentes", "arquivo": TESTER_CREDENTIALS_FILE}})
+
+    # ï£¿Ã¼Ã¶Ã„ Inicia o servidor Uvicorn com HTTPS e documentaâˆšÃŸâˆšÂ£o Swagger/ReDoc AUTOMâˆšÃ…TICA no /docs e /redoc
+    print("â€šÃºÃ– Servidor FastAPI inicializado. ")
+    print("â€šÃ»Â°Ã”âˆÃ¨  Acesse a documentaâˆšÃŸâˆšÂ£o interativa Swagger UI em: http://localhost:8882/docs") # ï£¿Ã¼Ã¬Ã± InstruâˆšÃŸâˆšÂµes Swagger UI
+    print("â€šÃ»Â°Ã”âˆÃ¨  Acesse a documentaâˆšÃŸâˆšÂ£o alternativa ReDoc em: http://localhost:8882/redoc") # ï£¿Ã¼Ã¬Ã¶ InstruâˆšÃŸâˆšÂµes ReDoc
+    uvicorn.run(app, host="0.0.0.0", port=8882, ssl_certfile=CERT_FILE, ssl_keyfile=KEY_FILE)
+📄 Arquivo: .\docs\project_structure.txt
+  Tamanho: 0.00 MB (1.21 KB, 1238 bytes)
+  Número de Linhas: 48
+
+  Código Fonte:
+DOCUMENTAÇÃO AUTOMÁTICA DA ESTRUTURA DO PROJETO
+---------------------------------------------------
+Gerado por: doc_gen.py
+Data de Geração: 10/03/2025 00:32:43
+Codificação do Arquivo: UTF-8
+
+Estrutura de diretórios e arquivos a partir da raiz do projeto:
+
+./
+  .gitignore
+  CHANGELOG.md
+  Dockerfile
+  doc_gen_full.py
+  README.md
+  requirements.txt
+  app/
+    API-main-server-mvp.py
+    API-main-server-prod.py
+  bibliotecas/
+    calc_numbers.py
+    __pycache__/
+      calc_numbers.cpython-310.pyc
+  config/
+  credentials/
+    admin_credentials.json
+    certificado.pem
+    chave.pem
+    tester_credentials.json
+  docs/
+    project_structure.txt
+  exceptions/
+  logs/
+    api-detailed-logs.json
+    api-logs.json
+  schemas/
+  tests/
+    api_main_tester_v1.py
+    api_main_tester_v2.py.py
+    test_lib_calc_numbers.py
+  test_logs/
+    log_teste_1.json
+
+---------------------------------------------------
+Fim da Documentação da Estrutura do Projeto.
+
+Este arquivo foi gerado automaticamente. Para atualizar a documentação,
+execute o script novamente: 'python doc_gen.py'
+Certifique-se de que seu editor de texto/visualizador utilize UTF-8 para exibir corretamente os caracteres.
+
+📄 Arquivo: .\logs\api-detailed-logs.json
+  Tamanho: 0.06 MB (58.24 KB, 59635 bytes)
+  Número de Linhas: 228
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\logs\api-logs.json
+  Tamanho: 0.05 MB (50.44 KB, 51655 bytes)
+  Número de Linhas: 228
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
+
+📄 Arquivo: .\tests\api_main_tester_v1.py
+  Tamanho: 0.01 MB (12.89 KB, 13204 bytes)
+  Número de Linhas: 254
+
+  Código Fonte:
+import requests
+import json
+import os
+import unittest
+import time
+from datetime import datetime
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init(autoreset=True)
+
+API_BASE_URL = os.environ.get("API_TEST_URL", "https://localhost:8882")
+VERIFY_SSL_CERT = os.environ.get("API_VERIFY_SSL", False) == 'True'
+LOG_DIR = "test_logs"
+LOG_FILE = os.path.join(LOG_DIR, "api-test-log.json")
+
+ADMIN_TOKEN = None
+
+def obter_token_admin():
+    global ADMIN_TOKEN
+    token_url = f"{API_BASE_URL}/token_admin"
+    credenciais = {"username": "admin", "password": "admin"}
+    try:
+        resposta = requests.post(token_url, json=credenciais, verify=VERIFY_SSL_CERT)
+        resposta.raise_for_status()
+        ADMIN_TOKEN = resposta.json().get("access_token")
+        return ADMIN_TOKEN
+    except requests.exceptions.RequestException as e:
+        print(Fore.RED + Style.BRIGHT + f"üî• Erro ao obter token ADMIN: {e}" + Style.RESET_ALL)
+        return None
+
+def colored_print_success(msg):
+    print(Fore.GREEN + Style.BRIGHT + "‚úÖ " + msg + Style.RESET_ALL)
+
+def colored_print_failure(msg):
+    print(Fore.RED + Style.BRIGHT + "‚ùå " + msg + Style.RESET_ALL)
+
+def colored_print_info(msg):
+    print(Fore.CYAN + Style.BRIGHT + "‚ÑπÔ∏è  " + msg + Style.RESET_ALL)
+
+def colored_print_warning(msg):
+    print(Fore.YELLOW + Style.BRIGHT + "‚ö†Ô∏è  " + msg + Style.RESET_ALL)
+
+def colored_print_header(msg):
+    print(Back.BLUE + Fore.WHITE + Style.BRIGHT + " " + msg + " " + Style.RESET_ALL)
+
+class ApiTests(unittest.TestCase):
+
+    def setUp(self):
+        global ADMIN_TOKEN
+        if not ADMIN_TOKEN:
+            ADMIN_TOKEN = obter_token_admin()
+            if not ADMIN_TOKEN:
+                self.skipTest("Token ADMIN n√£o obtido, pulando testes protegidos.")
+        self.admin_token = ADMIN_TOKEN
+        self.headers_admin = {"Authorization": f"Bearer {self.admin_token}"}
+        self.log_entries = []
+
+    def tearDown(self):
+        end_time = time.time()
+        test_duration = end_time - self.start_test_time
+        status = "PASSOU" if not self._outcome.errors and not self._outcome.failures else "FALHOU"
+
+        log_entry = {
+            "test_name": self._testMethodName,
+            "status": status,
+            "duration_seconds": f"{test_duration:.4f}",
+            "timestamp": datetime.now().isoformat(),
+            "details": self.current_test_log
+        }
+        self.log_entries.append(log_entry)
+        self._save_log_to_file()
+
+
+    def _start_test_logging(self, test_name):
+        self.current_test_log = []
+        self.start_test_time = time.time()
+
+    def _log_request_response(self, method, url, headers, data, response):
+        log_data = {
+            "request": {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "data": data if method == 'POST' else None,
+                "json": data if method == 'POST' else None
+            },
+            "response": {
+                "status_code": response.status_code,
+                "headers": dict(response.headers),
+                "body": response.text
+            }
+        }
+        self.current_test_log.append(log_data)
+
+    def _save_log_to_file(self):
+        if not os.path.exists(LOG_DIR):
+            os.makedirs(LOG_DIR)
+        log_header = {"test_run_timestamp": datetime.now().isoformat(), "test_suite": "ApiTests"}
+
+        try:
+            file_exists = os.path.exists(LOG_FILE)
+            with open(LOG_FILE, 'a') as f:
+                if not file_exists:
+                    f.write('{"test_runs": [\n')
+                else:
+                    f.write(',\n')
+
+                json.dump(log_header, f, indent=4, ensure_ascii=False)
+                f.write(',\n"tests": [\n')
+
+                for i, entry in enumerate(self.log_entries):
+                    json.dump(entry, f, indent=4, ensure_ascii=False)
+                    if i < len(self.log_entries) - 1:
+                        f.write(',')
+                    f.write('\n')
+
+                f.write(']\n}')
+                self.log_entries = []
+
+        except Exception as e:
+            colored_print_failure(f"‚ùå Erro ao salvar log em '{LOG_FILE}': {e}")
+
+
+    def _testar_rota_post(self, url_path, token_headers, data, expected_status=200, expected_result_key=None, expected_result_value=None, test_name="Rota POST"):
+        url = f"{API_BASE_URL}{url_path}"
+        self._start_test_logging(test_name)
+
+        resposta = requests.post(url, headers=token_headers, json=data, verify=VERIFY_SSL_CERT)
+        self._log_request_response('POST', url, token_headers, data, resposta)
+
+        if resposta.status_code != expected_status:
+            colored_print_failure(f"‚ùå {test_name} FALHOU: Status code incorreto. Esperado: {expected_status}, Obtido: {resposta.status_code}. Response Body: {resposta.text}")
+            self.assertEqual(resposta.status_code, expected_status)
+            return
+
+        if expected_status < 400 and expected_result_key:
+            try:
+                response_json = resposta.json()
+                actual_value = response_json.get(expected_result_key)
+                if expected_result_value is not None:
+                    if actual_value == expected_result_value:
+                        colored_print_success(f"‚úÖ {test_name} OK: Valor de '{expected_result_key}' validado. ({expected_result_value})")
+                    else:
+                        colored_print_failure(f"‚ùå {test_name} FALHOU: Valor incorreto para chave '{expected_result_key}'. Esperado: {expected_result_value}, Obtido: {actual_value}. Response: {response_json}")
+                        self.fail(f"Valor incorreto para chave '{expected_result_key}'. Esperado: {expected_result_value}, Obtido: {actual_value}")
+                else:
+                    if expected_result_key in response_json:
+                        colored_print_success(f"‚úÖ {test_name} OK: Chave '{expected_result_key}' presente na resposta.")
+                    else:
+                        colored_print_failure(f"‚ùå {test_name} FALHOU: Chave '{expected_result_key}' ausente na resposta JSON. Response: {response_json}")
+                        self.fail(f"Chave '{expected_result_key}' ausente na resposta JSON.")
+            except json.JSONDecodeError:
+                self.fail(f"‚ùå {test_name} FALHOU: Erro ao decodificar JSON. Response text: {resposta.text}")
+        return resposta
+
+
+    def test_rota_saude(self):
+        resposta = requests.get(f"{API_BASE_URL}/saude", verify=VERIFY_SSL_CERT)
+        self.assertEqual(resposta.status_code, 200, colored_print_failure(f"Rota /saude falhou, status code: {resposta.status_code}"))
+        if resposta.status_code == 200:
+            try:
+                response_json = resposta.json()
+                if response_json.get("status") == "OK":
+                    colored_print_success(f"‚úÖ Teste /saude OK: Status 'OK' encontrado na resposta JSON.")
+                else:
+                    colored_print_failure(f"‚ùå /saude - status incorreto na resposta JSON. Esperado 'OK', obtido: '{response_json.get('status')}'")
+                    self.assertEqual(response_json.get("status"), "OK")
+
+                if "mensagem" in response_json:
+                    colored_print_success(f"‚úÖ Teste /saude OK: Chave 'mensagem' encontrada na resposta JSON.")
+                else:
+                    colored_print_failure(f"‚ùå /saude - chave 'mensagem' ausente na resposta JSON.")
+                    self.assertIn("mensagem", response_json)
+
+                if "version" in response_json:
+                    colored_print_success(f"‚úÖ Teste /saude OK: Chave 'version' encontrada na resposta JSON.")
+                else:
+                    colored_print_warning(f"‚ö†Ô∏è /saude - chave 'version' ausente na resposta JSON (pode ser opcional).")
+
+            except json.JSONDecodeError:
+                colored_print_failure(f"‚ùå /saude - Resposta n√£o √© um JSON v√°lido: {resposta.text}")
+                self.fail("Resposta /saude n√£o √© um JSON v√°lido")
+        else:
+            colored_print_failure(f"‚ùå Rota /saude falhou, status code: {resposta.status_code}")
+
+
+    def test_rota_somar_numeros_positivos(self):
+        numeros = [1, 2, 3, 4, 5]
+        soma_esperada = sum(numeros)
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="resultado", expected_result_value=soma_esperada, test_name="/somar n√∫meros positivos")
+
+    def test_rota_calcular_media_numeros_positivos(self):
+        numeros = [1, 2, 3, 4, 5]
+        media_esperada = sum(numeros) / len(numeros)
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="media", expected_result_value=media_esperada, test_name="/calcular_media n√∫meros positivos")
+
+    def test_rota_somar_lista_vazia_erro_422(self):
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": []}, expected_status=422, test_name="/somar lista vazia (erro 422)")
+
+    def test_rota_calcular_media_lista_vazia_retorna_none(self):
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": []}, expected_status=200, expected_result_key="media", expected_result_value=None, test_name="/calcular_media lista vazia (media None)")
+
+    def test_rota_somar_input_nao_lista_erro_422(self):
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": "string"}, expected_status=422, test_name="/somar input n√£o lista (erro 422)")
+
+    def test_rota_calcular_media_input_nao_lista_erro_422(self):
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": "string"}, expected_status=422, test_name="/calcular_media input n√£o lista (erro 422)")
+
+    def test_rota_somar_lista_com_nao_inteiros_erro_422(self):
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": [1, 2, "a", 4]}, expected_status=422, test_name="/somar lista com n√£o inteiros (erro 422)")
+
+    def test_rota_calcular_media_lista_com_nao_inteiros_erro_422(self):
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": [1, 2, "a", 4]}, expected_status=422, test_name="/calcular_media lista com n√£o inteiros (erro 422)")
+
+    def test_rota_somar_lista_com_none_erro_422(self):
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": [1, 2, None, 4]}, expected_status=422, test_name="/somar lista com None (erro 422)")
+
+    def test_rota_calcular_media_lista_com_none_erro_422(self):
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": [1, 2, None, 4]}, expected_status=422, test_name="/calcular_media lista com None (erro 422)")
+
+    def test_rota_somar_lista_com_float_como_string_erro_422(self):
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": [1, 2, "2.5", 4]}, expected_status=422, test_name="/somar lista float string (erro 422)")
+
+    def test_rota_calcular_media_lista_com_float_como_string_erro_422(self):
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": [1, 2, "2.5", 4]}, expected_status=422, test_name="/calcular_media lista float string (erro 422)")
+
+    def test_rota_somar_lista_com_string_int_ok(self):
+        numeros = [1, 2, "3", 4]
+        soma_esperada = sum([1, 2, 3, 4])
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="resultado", expected_result_value=soma_esperada, test_name="/somar lista com string int (OK)")
+
+    def test_rota_calcular_media_lista_com_string_int_ok(self):
+        numeros = [1, 2, "3", 4]
+        media_esperada = sum([1, 2, 3, 4]) / len([1, 2, 3, 4])
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="media", expected_result_value=media_esperada, test_name="/calcular_media lista string int (OK)")
+
+    def test_rota_somar_lista_com_float_int_string_ok(self):
+        numeros = [1, 2.0, "3", 4]
+        soma_esperada = sum([1, 2, 3, 4])
+        self._testar_rota_post("/somar", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="resultado", expected_result_value=soma_esperada, test_name="/somar lista float int string (OK)")
+
+    def test_rota_calcular_media_lista_com_float_int_string_ok(self):
+        numeros = [1, 2.0, "3", 4]
+        media_esperada = sum([1, 2, 3, 4]) / len([1, 2, 3, 4])
+        self._testar_rota_post("/calcular_media", self.headers_admin, {"numeros": numeros}, expected_status=200, expected_result_key="media", expected_result_value=media_esperada, test_name="/calcular_media lista float int string (OK)")
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ApiTests))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    test_results = runner.run(suite)
+📄 Arquivo: .\tests\api_main_tester_v2.py.py
+  Tamanho: 0.01 MB (8.51 KB, 8719 bytes)
+  Número de Linhas: 168
+
+  Código Fonte:
+import requests
+import json
+import os
+import unittest
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init(autoreset=True)
+
+API_BASE_URL = os.environ.get("API_TEST_URL", "https://localhost:8882")
+VERIFY_SSL_CERT = os.environ.get("API_VERIFY_SSL", False) == 'True'
+
+ADMIN_TOKEN = None
+
+def obter_token_admin():
+    global ADMIN_TOKEN
+    token_url = f"{API_BASE_URL}/token_admin"
+    credenciais = {"username": "admin", "password": "admin"}
+    try:
+        resposta = requests.post(token_url, json=credenciais, verify=VERIFY_SSL_CERT)
+        resposta.raise_for_status()
+        ADMIN_TOKEN = resposta.json().get("access_token")
+        colored_print_success("üîë Token ADMIN obtido.")
+        return ADMIN_TOKEN
+    except requests.exceptions.RequestException as e:
+        print(Fore.RED + Style.BRIGHT + f"üî• Erro ao obter token ADMIN: {e}" + Style.RESET_ALL)
+        return None
+
+def colored_print_success(msg):
+    print(Fore.GREEN + Style.BRIGHT + "‚úÖ " + msg + Style.RESET_ALL)
+
+def colored_print_failure(msg):
+    print(Fore.RED + Style.BRIGHT + "‚ùå " + msg + Style.RESET_ALL)
+
+def colored_print_info(msg):
+    print(Fore.CYAN + Style.BRIGHT + "‚ÑπÔ∏è  " + msg + Style.RESET_ALL)
+
+def colored_print_warning(msg):
+    print(Fore.YELLOW + Style.BRIGHT + "‚ö†Ô∏è  " + msg + Style.RESET_ALL)
+
+def colored_print_header(msg):
+    print(Back.BLUE + Fore.WHITE + Style.BRIGHT + " " + msg + " " + Style.RESET_ALL)
+
+
+class TestApiProd(unittest.TestCase):
+
+    def setUp(self):
+        global ADMIN_TOKEN
+        if not ADMIN_TOKEN:
+            ADMIN_TOKEN = obter_token_admin()
+            if not ADMIN_TOKEN:
+                self.skipTest("Token ADMIN n√£o obtido, pulando testes.")
+        self.admin_token = ADMIN_TOKEN
+        self.headers_admin = {"Authorization": f"Bearer {self.admin_token}"}
+
+    def _testar_rota_post(self, url_path, data, expected_status=200, expected_result_key=None, expected_result_value=None, test_name="Rota POST"):
+        url = f"{API_BASE_URL}{url_path}"
+        colored_print_info(f"‚û°Ô∏è  Testando rota: {url_path} - Dados: {data}")
+
+        resposta = requests.post(url, headers=self.headers_admin, json=data, verify=VERIFY_SSL_CERT)
+
+        if resposta.status_code != expected_status:
+            colored_print_failure(f"‚ùå {test_name} FALHOU: Status code incorreto. Esperado: {expected_status}, Obtido: {resposta.status_code}. Response Body: {resposta.text}")
+            self.assertEqual(resposta.status_code, expected_status)
+            return
+
+        if expected_status < 400 and expected_result_key:
+            try:
+                response_json = resposta.json()
+                actual_value = response_json.get(expected_result_key)
+                self.assertEqual(actual_value, expected_result_value, f"Valor incorreto para chave '{expected_result_key}'. Esperado: {expected_result_value}, Obtido: {actual_value}")
+                colored_print_success(f"‚úÖ {test_name} OK: Valor de '{expected_result_key}' validado. ({expected_result_value})")
+            except json.JSONDecodeError:
+                self.fail(f"‚ùå {test_name} FALHOU: Erro ao decodificar JSON. Response text: {resposta.text}")
+
+
+    def test_soma_inteiros_validos(self):
+        self._testar_rota_post("/somar", {"numeros": [1, 2, 3, 4]}, expected_status=200, expected_result_key="resultado", expected_result_value=10, test_name="soma_inteiros_validos")
+
+    def test_soma_strings_numericas_validas(self):
+        self._testar_rota_post("/somar", {"numeros": ["5", "10", "15"]}, expected_status=200, expected_result_key="resultado", expected_result_value=30, test_name="soma_strings_numericas_validas")
+
+    def test_soma_lista_vazia_erro(self):
+        self._testar_rota_post("/somar", {"numeros": []}, expected_status=422, test_name="soma_lista_vazia_erro")
+
+    def test_soma_tipo_invalido_string_erro(self):
+        self._testar_rota_post("/somar", {"numeros": "nao_eh_lista"}, expected_status=422, test_name="soma_tipo_invalido_string_erro")
+
+    def test_soma_lista_com_string_erro(self):
+        self._testar_rota_post("/somar", {"numeros": [1, 2, "a", 4]}, expected_status=422, test_name="soma_lista_com_string_erro")
+
+    def test_soma_lista_com_float_sem_perda(self):
+        self._testar_rota_post("/somar", {"numeros": [1, 2, 3.0, 4]}, expected_status=200, expected_result_key="resultado", expected_result_value=10, test_name="soma_lista_com_float_sem_perda")
+
+    def test_soma_lista_com_float_com_perda_erro(self):
+        self._testar_rota_post("/somar", {"numeros": [1, 2, 3.5, 4]}, expected_status=422, test_name="soma_lista_com_float_com_perda_erro")
+
+    def test_soma_lista_com_none_erro(self):
+        self._testar_rota_post("/somar", {"numeros": [1, 2, None, 4]}, expected_status=422, test_name="soma_lista_com_none_erro")
+
+
+    def test_media_inteiros_validos(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [1, 2, 3, 4]}, expected_status=200, expected_result_key="media", expected_result_value=2.5, test_name="media_inteiros_validos")
+
+    def test_media_strings_numericas_validas(self):
+        self._testar_rota_post("/calcular_media", {"numeros": ["5", "10", "15"]}, expected_status=200, expected_result_key="media", expected_result_value=10.0, test_name="media_strings_numericas_validas")
+
+    def test_media_lista_vazia_ok(self):
+        self._testar_rota_post("/calcular_media", {"numeros": []}, expected_status=200, expected_result_key="media", expected_result_value=None, test_name="media_lista_vazia_ok")
+
+    def test_media_tipo_invalido_string_erro(self):
+        self._testar_rota_post("/calcular_media", {"numeros": "nao_eh_lista"}, expected_status=422, test_name="media_tipo_invalido_string_erro")
+
+    def test_media_lista_com_string_erro(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [1, 2, "a", 4]}, expected_status=422, test_name="media_lista_com_string_erro")
+
+    def test_media_lista_com_float_sem_perda(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [1, 2, 3.0, 4]}, expected_status=200, expected_result_key="media", expected_result_value=2.5, test_name="media_lista_com_float_sem_perda")
+
+    def test_media_lista_com_float_com_perda_erro(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [1, 2, 3.5, 4]}, expected_status=422, test_name="media_lista_com_float_com_perda_erro")
+
+    def test_media_lista_com_none_erro(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [1, 2, None, 4]}, expected_status=422, test_name="media_lista_com_none_erro")
+
+    def test_media_divisao_por_zero(self):
+        self._testar_rota_post("/calcular_media", {"numeros": [0, 0, 0]}, expected_status=200, expected_result_key="media", expected_result_value=0.0, test_name="media_divisao_por_zero")
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestApiProd))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    test_results = runner.run(suite)
+
+    total_tests = suite.countTestCases()
+    passed_tests = total_tests - (len(test_results.errors) + len(test_results.failures))
+    failed_tests = total_tests - passed_tests
+
+    if total_tests > 0:
+        percentage_passed = (passed_tests / total_tests) * 100
+        percentage_failed = (failed_tests / total_tests) * 100
+    else:
+        percentage_passed = 0
+        percentage_failed = 0
+
+    print(Fore.BLUE + Style.BRIGHT + "\nüìä Resumo dos Testes:" + Style.RESET_ALL)
+    if percentage_passed == 100:
+        print(Fore.GREEN + Style.BRIGHT + "üèÜ Todos os testes PASSARAM! üéâ" + Style.RESET_ALL)
+    elif percentage_failed == 100:
+        print(Fore.RED + Style.BRIGHT + "üö® Todos os testes FALHARAM! üíî" + Style.RESET_ALL)
+    else:
+        print(Fore.GREEN + Style.BRIGHT + f"‚úÖ Passou: {percentage_passed:.2f}% ({passed_tests}/{total_tests})" + Style.RESET_ALL)
+        print(Fore.RED + Style.BRIGHT + f"‚ùå Reprovou: {percentage_failed:.2f}% ({failed_tests}/{total_tests})" + Style.RESET_ALL)
+
+    if percentage_passed >= 70:
+        status_emoji = "üòéüëç"
+        status_color = Fore.GREEN
+    elif percentage_passed >= 50:
+        status_emoji = "üôÇ"
+        status_color = Fore.YELLOW
+    else:
+        status_emoji = "üòûüíî"
+        status_color = Fore.RED
+
+    print(status_color + Style.BRIGHT + f"\n‚ú® Status Geral: {status_emoji} {percentage_passed:.2f}% de Aprova√ß√£o! {status_emoji}" + Style.RESET_ALL)
+    print(Fore.BLUE + Style.BRIGHT + "\nüèÅ Testes Simplificados e Diretos da API de Produ√ß√£o Conclu√≠dos." + Style.RESET_ALL)
+📄 Arquivo: .\tests\test_lib_calc_numbers.py
+  Tamanho: 0.01 MB (5.54 KB, 5673 bytes)
+  Número de Linhas: 117
+
+  Código Fonte:
+import sys
+import os
+import json
+import datetime
+import pytest
+from bibliotecas.calc_numbers import Numbers
+
+DIRETORIO_LOGS_TESTE = "test_logs"
+if not os.path.exists(DIRETORIO_LOGS_TESTE):
+    os.makedirs(DIRETORIO_LOGS_TESTE)
+
+def obter_proximo_nome_arquivo_log():
+    contador_logs = 1
+    while True:
+        nome_arquivo_log = os.path.join(DIRETORIO_LOGS_TESTE, f"log_teste_{contador_logs}.json")
+        if not os.path.exists(nome_arquivo_log):
+            return nome_arquivo_log
+        contador_logs += 1
+
+def salvar_log_teste(dados_log):
+    nome_arquivo_log = obter_proximo_nome_arquivo_log()
+    with open(nome_arquivo_log, 'w', encoding='utf-8') as arquivo:
+        json.dump(dados_log, arquivo, indent=4, ensure_ascii=False)
+    print(f"Resultados dos testes salvos em: {nome_arquivo_log}")
+
+
+def executar_testes():
+    calculadora = Numbers()
+    resultados_teste = []
+
+    casos_teste_soma = [
+        {"nome": "soma_inteiros_validos", "entrada": [1, 2, 3, 4], "saida_esperada": 10, "espera_excecao": None},
+        {"nome": "soma_strings_numericas_validas", "entrada": ["5", "10", "15"], "saida_esperada": 30, "espera_excecao": None},
+        {"nome": "soma_lista_vazia", "entrada": [], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "soma_tipo_invalido_string", "entrada": "nao_eh_lista", "saida_esperada": None, "espera_excecao": TypeError},
+        {"nome": "soma_lista_com_string", "entrada": [1, 2, "a", 4], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "soma_lista_com_float_sem_perda", "entrada": [1, 2, 3.0, 4], "saida_esperada": 10, "espera_excecao": None},
+        {"nome": "soma_lista_com_float_com_perda", "entrada": [1, 2, 3.5, 4], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "soma_lista_com_none", "entrada": [1, 2, None, 4], "saida_esperada": None, "espera_excecao": ValueError},
+    ]
+
+    for caso in casos_teste_soma:
+        resultado = executar_caso_teste(calculadora.sum_numbers, caso)
+        resultados_teste.append(resultado)
+
+    casos_teste_media = [
+        {"nome": "media_inteiros_validos", "entrada": [1, 2, 3, 4], "saida_esperada": 2.5, "espera_excecao": None},
+        {"nome": "media_strings_numericas_validas", "entrada": ["5", "10", "15"], "saida_esperada": 10.0, "espera_excecao": None},
+        {"nome": "media_lista_vazia", "entrada": [], "saida_esperada": None, "espera_excecao": None},
+        {"nome": "media_tipo_invalido_string", "entrada": "nao_eh_lista", "saida_esperada": None, "espera_excecao": TypeError},
+        {"nome": "media_lista_com_string", "entrada": [1, 2, "a", 4], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "media_lista_com_float_sem_perda", "entrada": [1, 2, 3.0, 4], "saida_esperada": 2.5, "espera_excecao": None},
+        {"nome": "media_lista_com_float_com_perda", "entrada": [1, 2, 3.5, 4], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "media_lista_com_none", "entrada": [1, 2, None, 4], "saida_esperada": None, "espera_excecao": ValueError},
+        {"nome": "media_divisao_por_zero", "entrada": [0, 0, 0], "saida_esperada": 0.0, "espera_excecao": None},
+    ]
+
+    for caso in casos_teste_media:
+        resultado = executar_caso_teste(calculadora.calculate_average, caso)
+        resultados_teste.append(resultado)
+
+    dados_log = {"timestamp_execucao_teste": datetime.datetime.now().isoformat(), "resultados_teste": resultados_teste}
+    salvar_log_teste(dados_log)
+
+
+def executar_caso_teste(funcao_testar, caso_teste):
+    nome_teste = caso_teste["nome"]
+    dados_entrada = caso_teste["entrada"]
+    saida_esperada = caso_teste["saida_esperada"]
+    excecao_esperada = caso_teste["espera_excecao"]
+
+    entrada_log = {"nome_teste": nome_teste, "entrada": dados_entrada, "saida_esperada": saida_esperada, "excecao_esperada": excecao_esperada.__name__ if excecao_esperada else None}
+
+    try:
+        if excecao_esperada:
+            with pytest.raises(excecao_esperada) as info_excecao:
+                funcao_testar(dados_entrada)
+            saida_real = None
+            status_teste = "PASSOU"
+            entrada_log["excecao_real"] = info_excecao.type.__name__
+            entrada_log["mensagem_excecao"] = str(info_excecao.value)
+
+        else:
+            saida_real = funcao_testar(dados_entrada)
+            if saida_esperada is None:
+                if saida_real is None:
+                    status_teste = "PASSOU"
+                else:
+                    status_teste = "FALHOU"
+                    entrada_log["saida_real"] = saida_real
+            elif isinstance(saida_esperada, float):
+                if pytest.approx(saida_real) == saida_esperada:
+                    status_teste = "PASSOU"
+                else:
+                    status_teste = "FALHOU"
+                    entrada_log["saida_real"] = saida_real
+            else:
+                if saida_real == saida_esperada:
+                    status_teste = "PASSOU"
+                else:
+                    status_teste = "FALHOU"
+                    entrada_log["saida_real"] = saida_real
+
+    except Exception as erro:
+        status_teste = "ERRO"
+        entrada_log["status_teste"] = status_teste
+        entrada_log["mensagem_erro"] = str(erro)
+        saida_real = None
+
+    entrada_log["status_teste"] = status_teste
+    return entrada_log
+
+
+if __name__ == "__main__":
+    print("Iniciando testes da biblioteca calc_numbers...")
+    executar_testes()
+    print("Testes da biblioteca calc_numbers conclu√≠dos e resultados salvos em test_logs/")
+📄 Arquivo: .\test_logs\log_teste_1.json
+  Tamanho: 0.01 MB (6.64 KB, 6799 bytes)
+  Número de Linhas: 204
+  Conteúdo não textual ou extensão não suportada para visualização do código fonte.
