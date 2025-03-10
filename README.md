@@ -19,7 +19,7 @@
 Este repositório contém o código para uma API RESTful desenvolvida como parte de um teste prático para a Jumpad. O objetivo principal é fornecer endpoints seguros e eficientes para realizar operações matemáticas básicas, com foco em **soma e média de vetores de números inteiros**.
 
 **👨‍💻 Desenvolvedor:** Elias Andrade
-**🗓️ Datas de Criação:** 09 e 10 de Março de 2025
+**🗓️ Datas de Criação:** 10 de Março de 2025
 **📍 Localização:** Maringá, Paraná, Brasil
 
 ## 📌 Resumo do Projeto
