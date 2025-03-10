@@ -1,18 +1,18 @@
 # 🌟 Projeto Jumpad API - Desafio Prático de API RESTful Segura 🛡️
 
-[![Projeto em Desenvolvimento Ativo](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://www.repostatus.org/#active)
-[![Linguagem Python](https://img.shields.io/badge/Python-3.11-blueviolet)](https://www.python.org/downloads/release/python-3110/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Segurança JWT](https://img.shields.io/badge/JWT-Seguro-yellow)](https://jwt.io/)
-[![Protocolo HTTPS](https://img.shields.io/badge/HTTPS-Habilitado-brightgreen)](https://en.wikipedia.org/wiki/HTTPS)
-[![Dockerizado](https://img.shields.io/badge/Docker-Pronto-blue?logo=docker)](https://www.docker.com/)
-[![Kubernetes Templates](https://img.shields.io/badge/Kubernetes-Templates%20Iniciais-blueviolet?logo=kubernetes)](https://kubernetes.io/)
-[![GitHub Actions CI/CD](https://img.shields.io/badge/GitHub%20Actions-Templates%20Iniciais-yellowgreen?logo=githubactions)](https://github.com/features/actions)
-[![Licença MIT](https://img.shields.io/badge/Licença-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Documentação Swagger UI](https://img.shields.io/badge/Swagger%20UI-Documentado-blue)](https://editor.swagger.io/)
-[![Documentação ReDoc](https://img.shields.io/badge/ReDoc-Documentado-blue)](https://redocly.com/docs/redoc/)
-[![Testes Unitários Implementados](https://img.shields.io/badge/Testes%20Unitários-✅%20Implementados-brightgreen)](https://docs.pytest.org/en/stable/)
-[![Testes de Integração Implementados](https://img.shields.io/badge/Testes%20Integração-✅%20Implementados-brightgreen)](https://docs.python.org/3/library/unittest.html)
+[![Projeto em Desenvolvimento Ativo](https://img.shields.io/badge/Status-Ativo-brightgreen?style=for-the-badge)](https://www.repostatus.org/#active)  
+[![Linguagem Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3110/)  
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)  
+[![Segurança JWT](https://img.shields.io/badge/JWT-Seguro-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)  
+[![Protocolo HTTPS](https://img.shields.io/badge/HTTPS-Habilitado-2596be?style=for-the-badge&logo=ssl&logoColor=white)](https://en.wikipedia.org/wiki/HTTPS)  
+[![Dockerizado](https://img.shields.io/badge/Docker-Pronto-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)  
+[![Kubernetes Templates](https://img.shields.io/badge/Kubernetes-Templates%20Iniciais-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)  
+[![GitHub Actions CI/CD](https://img.shields.io/badge/GitHub%20Actions-Templates%20Iniciais-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)  
+[![Licença Apache 2.0](https://img.shields.io/badge/Licença-Apache%202.0-D22128?style=for-the-badge&logo=apache&logoColor=white)](https://opensource.org/licenses/Apache-2.0)  
+[![Documentação Swagger UI](https://img.shields.io/badge/Swagger%20UI-Documentado-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://editor.swagger.io/)  
+[![Documentação ReDoc](https://img.shields.io/badge/ReDoc-Documentado-009688?style=for-the-badge&logo=read-the-docs&logoColor=white)](https://redocly.com/docs/redoc/)  
+[![Testes Unitários Implementados](https://img.shields.io/badge/Testes%20Unitários-✅%20Implementados-34D058?style=for-the-badge)](https://docs.pytest.org/en/stable/)  
+[![Testes de Integração Implementados](https://img.shields.io/badge/Testes%20Integração-✅%20Implementados-34D058?style=for-the-badge)](https://docs.python.org/3/library/unittest.html)  
 
 **Projeto de Demonstração para Jumpad: API RESTful Segura de Matemática ➗➕**
 
