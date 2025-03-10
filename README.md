@@ -2,7 +2,7 @@
 
 [![Projeto em Desenvolvimento Ativo](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://www.repostatus.org/#active)
 [![Linguagem Python](https://img.shields.io/badge/Python-3.11-blueviolet)](https://www.python.org/downloads/release/python-3110/)
-[![Framework FastAPI](https://img.shields.io/badge/FastAPI-%23005571.svg&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Segurança JWT](https://img.shields.io/badge/JWT-Seguro-yellow)](https://jwt.io/)
 [![Protocolo HTTPS](https://img.shields.io/badge/HTTPS-Habilitado-brightgreen)](https://en.wikipedia.org/wiki/HTTPS)
 [![Dockerizado](https://img.shields.io/badge/Docker-Pronto-blue?logo=docker)](https://www.docker.com/)
