@@ -1,0 +1,120 @@
+name: CI - Testar API e Capturar Artefatos de Teste # Nome do workflow: CI - Testar API e Capturar Artefatos de Teste
+
+on:
+  push:
+    branches: [ "main" ] # Disparar o workflow em push para o branch main
+  pull_request:
+    branches: [ "main" ] # Disparar o workflow em pull requests para o branch main
+
+jobs:
+  build-test-and-capture: # Define um job chamado build-test-and-capture
+    runs-on: ubuntu-latest # Executar este job no ambiente Ubuntu mais recente
+
+    steps: # Lista de passos a serem executados dentro do job
+      - name: Fazer Checkout do código # Passo: Fazer Checkout do código
+        uses: actions/checkout@v4 # Usa a action 'checkout' para clonar o repositório
+
+      - name: Configurar Python 3.11 # Passo: Configurar Python 3.11
+        uses: actions/setup-python@v5 # Usa a action 'setup-python' para configurar o ambiente Python
+        with:
+          python-version: '3.11' # Define a versão do Python para 3.11
+
+      - name: Instalar dependências # Passo: Instalar dependências
+        run: | # Executa comandos shell
+          python -m venv venv # Cria um ambiente virtual Python
+          source venv/bin/activate # Ativa o ambiente virtual
+          pip install --no-cache-dir -r requirements.txt # Instala as dependências do projeto a partir de requirements.txt
+
+      - name: Iniciar API em segundo plano (versão MVP) # Passo: Iniciar API em segundo plano (versão MVP)
+        run: | # Executa comandos shell
+          source venv/bin/activate # Ativa o ambiente virtual novamente para o processo em segundo plano
+          python app/API-main-server-mvp.py & # Inicia o script da API em segundo plano (&)
+          sleep 5 # Aguarda 5 segundos para a API iniciar (ajuste se necessário)
+          echo "API iniciada em segundo plano..." # Imprime mensagem de log
+
+      - name: Executar Testes da API (v1 e v2 e testes da lib) # Passo: Executar Testes da API (v1 e v2 e testes da lib)
+        run: | # Executa comandos shell
+          source venv/bin/activate # Ativa o ambiente virtual novamente para a execução dos testes
+          python tests/api_main_tester_v1.py # Executa o script de teste v1 da API
+          python tests/api_main_tester_v2.py.py # Executa o script de teste v2 da API
+          python tests/test_lib_calc_numbers.py # Executa o script de teste da biblioteca calc_numbers
+          echo "Testes da API concluídos." # Imprime mensagem de log
+
+      - name: Encontrar arquivos novos e modificados (após os testes) # Passo: Encontrar arquivos novos e modificados (após os testes)
+        id: find_new_files # Define um ID para este passo para referenciar a saída posteriormente
+        run: | # Executa comandos shell
+          # Lista arquivos modificados ou criados após o início do workflow.
+          # Esta é uma abordagem simplificada e pode capturar mais arquivos do que apenas os de saída dos testes
+          # Para uma abordagem mais robusta, rastreie os arquivos antes e depois da execução dos testes.
+          NEW_FILES=$(find . -type f -newerct "@$GITHUB_WORKFLOW_STARTED_AT") # Encontra arquivos mais novos que o horário de início do workflow
+          if [[ -n "$NEW_FILES" ]]; then # Se a variável NEW_FILES não estiver vazia (arquivos encontrados)
+            echo "NEW_FILES=$NEW_FILES" >> "$GITHUB_OUTPUT" # Define a saída do passo 'NEW_FILES' com a lista de arquivos
+            echo "::notice title=Arquivos Novos Encontrados::$(echo "$NEW_FILES" | sed 's/\n/%0A/g')" # Exibe um aviso na interface do GitHub Actions com a lista de arquivos
+          else # Se nenhum arquivo novo for encontrado
+            echo "NEW_FILES=" >> "$GITHUB_OUTPUT" # Define a saída do passo 'NEW_FILES' como vazia
+            echo "Nenhum arquivo novo encontrado." # Imprime mensagem de log
+          fi
+          echo "Workflow iniciado em: $GITHUB_WORKFLOW_STARTED_AT" # Imprime o horário de início do workflow para debug
+
+      - name: Listar arquivos novos (para debug - opcional) # Passo: Listar arquivos novos (para debug - opcional)
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se a saída 'NEW_FILES' do passo 'find_new_files' não estiver vazia
+        run: | # Executa comandos shell
+          echo "Lista de arquivos novos/modificados:" # Imprime mensagem de log
+          echo "${{ steps.find_new_files.outputs.NEW_FILES }}" # Imprime a lista de arquivos novos encontrados
+
+      - name: Criar diretório github-actions-test # Passo: Criar diretório github-actions-test
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se arquivos novos foram encontrados
+        run: mkdir -p github-actions-test # Cria o diretório github-actions-test se ele não existir
+
+      - name: Mover arquivos novos para github-actions-test # Passo: Mover arquivos novos para github-actions-test
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se arquivos novos foram encontrados
+        run: | # Executa comandos shell
+          NEW_FILES_LIST="${{ steps.find_new_files.outputs.NEW_FILES }}" # Obtém a lista de arquivos novos da saída do passo 'find_new_files'
+          if [[ -n "$NEW_FILES_LIST" ]]; then # Se a lista de arquivos não estiver vazia
+            IFS=$'\n' read -r -d '' -a FILES_ARRAY <<< "$NEW_FILES_LIST" # Divide a lista de arquivos em um array
+            for FILE in "${FILES_ARRAY[@]}"; do # Loop através de cada arquivo no array
+              if [[ -f "$FILE" ]]; then # Verifica se é um arquivo (para evitar erros com diretórios)
+                mv "$FILE" github-actions-test/ # Move o arquivo para o diretório github-actions-test/
+                echo "Arquivo movido: $FILE para github-actions-test/" # Imprime mensagem de log
+              fi
+            done
+          fi
+          echo "Arquivos movidos para o diretório github-actions-test." # Imprime mensagem de log
+
+      - name: Configurar Git # Passo: Configurar Git
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se arquivos novos foram encontrados
+        run: | # Executa comandos shell
+          git config --local user.email "actions@github.com" # Configura o email do usuário Git localmente
+          git config --local user.name "GitHub Actions" # Configura o nome do usuário Git localmente
+
+      - name: Adicionar e Commitar arquivos novos em github-actions-test # Passo: Adicionar e Commitar arquivos novos em github-actions-test
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se arquivos novos foram encontrados
+        run: | # Executa comandos shell
+          git add github-actions-test/* # Adiciona todos os arquivos dentro de github-actions-test para staging
+          git commit -m "Adicionar artefatos de teste da execução do GitHub Actions para github-actions-test" # Commita as alterações
+
+      - name: Push das alterações para o repositório # Passo: Push das alterações para o repositório
+        if: steps.find_new_files.outputs.NEW_FILES != '' # Executa este passo apenas se arquivos novos foram encontrados
+        uses: ad-m/github-push-action@master # Usa a action 'github-push-action' para fazer push
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Usa o token padrão GITHUB_TOKEN para autenticação
+          branch: main # Branch para fazer push (main) - ajuste se necessário
+
+      - name: Testar API de Produção (Exemplo - Adapte para seu deploy) # Passo: Testar API de Produção (Exemplo - Adapte para seu deploy)
+        if: always() # Executa este passo sempre, independentemente do status dos passos anteriores (para demonstração)
+        run: | # Executa comandos shell
+          echo "--- Teste da API de Produção (Exemplo - Adapte para sua API deployada) ---" # Imprime mensagem de log
+          # *** IMPORTANTE ***
+          # Para testar uma API de PRODUÇÃO, você precisa:
+          # 1. Ter sua API deployada e acessível em uma URL conhecida (ex: https://sua-api.exemplo.com)
+          # 2. Definir a variável de ambiente API_TEST_URL para a URL da sua API de produção
+          # 3. Ajustar tests/api_main_tester_v1.py e tests/api_main_tester_v2.py.py
+          #    para usar variáveis de ambiente ou configuração para URLs da API
+          # 4.  Considerar configurar suítes de teste separadas para testes locais (MVP) e de produção
+          #
+          # Exemplo (substitua com a URL real da sua API de produção e lógica de teste):
+          # export API_TEST_URL="https://sua-api.exemplo.com"
+          # python tests/api_main_tester_v1.py
+          # python tests/api_main_tester_v2.py.py
+          echo "O passo de teste da API de produção é um placeholder. Adapte-o para seu deploy real e estratégia de teste." # Imprime mensagem de aviso
+          echo "--- Fim do Exemplo de Teste da API de Produção ---" # Imprime mensagem de log

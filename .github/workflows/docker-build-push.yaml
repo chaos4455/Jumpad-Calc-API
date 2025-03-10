@@ -1,0 +1,62 @@
+name: CI/CD - Build e Push Imagem Docker para Docker Hub # Nome do workflow: CI/CD - Build e Push Imagem Docker para Docker Hub
+
+on:
+  push:
+    branches: [ "main" ] # Disparar o workflow em push para o branch main
+    tags: # Disparar também em pushes de tags (para releases versionadas)
+      - 'v*.*.*' # Ex: tags como v1.0.0, v2.1.5, etc.
+
+jobs:
+  build-and-push-docker: # Define um job chamado build-and-push-docker
+    runs-on: ubuntu-latest # Executar este job no ambiente Ubuntu mais recente
+
+    steps: # Lista de passos a serem executados dentro do job
+      - name: Checkout do código # Passo: Checkout do código
+        uses: actions/checkout@v4 # Usa a action 'checkout' para clonar o repositório
+
+      - name: Configurar Docker Buildx # Passo: Configurar Docker Buildx (para builds multi-arquitetura, se necessário)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no Docker Hub # Passo: Login no Docker Hub
+        uses: docker/login-action@v3 # Usa a action 'login-action' para fazer login no Docker Hub
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }} # Credenciais do Docker Hub armazenadas como Secrets do GitHub
+          password: ${{ secrets.DOCKERHUB_TOKEN }} # Credenciais do Docker Hub armazenadas como Secrets do GitHub
+
+      - name: Build e Push da Imagem Docker # Passo: Build e Push da Imagem Docker
+        id: docker-build-push # Define um ID para este passo para referenciar a saída posteriormente
+        uses: docker/build-push-action@v5 # Usa a action 'build-push-action' para construir e fazer push da imagem
+        with:
+          context: . # Contexto do build é o diretório raiz do repositório (.)
+          file: ./Dockerfile # Caminho para o Dockerfile
+          push: true # Habilitar o push da imagem para o Docker Hub
+          tags: | # Tags para a imagem Docker
+            chaos4455/projetojumpad:latest # Tag 'latest' (sempre atualizada com o branch main)
+            chaos4455/projetojumpad:${{ github.ref_name }} # Tag com o nome do branch (ex: 'main')
+            chaos4455/projetojumpad:v${{ github.ref_name }} # Tag com 'v' + nome do branch (ex: 'vmain')
+            # Se for um push de tag (release), usar a tag como versão da imagem
+            ${{ github.ref_name == 'refs/tags/v1.0.0' && 'chaos4455/projetojumpad:v1.0.0' || '' }}
+            ${{ github.ref_name == 'refs/tags/v1.0.1' && 'chaos4455/projetojumpad:v1.0.1' || '' }}
+            ${{ github.ref_name == 'refs/tags/v*' && 'chaos4455/projetojumpad:v'}}${{ github.ref_name_short }} # Tag com a versão da tag (ex: v1.0.0, v2.1.5)
+            # Ajuste as tags conforme sua estratégia de versionamento e tagging de imagens Docker
+
+      - name: Imprimir informações da Imagem (opcional - para debug) # Passo: Imprimir informações da Imagem (opcional - para debug)
+        if: always() # Executar este passo sempre, independentemente do sucesso ou falha dos passos anteriores
+        run: | # Executa comandos shell
+          echo "--- Informações do Build e Push da Imagem Docker ---" # Imprime mensagem de log
+          echo "Imagem Docker: ${{ steps.docker-build-push.outputs.image }}" # Imprime o nome da imagem construída
+          echo "Tags Docker:" # Imprime as tags da imagem
+          echo "${{ steps.docker-build-push.outputs.tags }}" # Imprime a lista de tags
+          echo "Status do Push: ${{ steps.docker-build-push.outputs.digest }}" # Imprime o digest da imagem (hash SHA256)
+          echo "--- Fim das Informações da Imagem ---" # Imprime mensagem de log
+
+# *** INSTRUÇÕES IMPORTANTES ***
+# 1.  Crie Secrets no GitHub Actions para seu repositório:
+#     - DOCKERHUB_USERNAME: Seu nome de usuário do Docker Hub
+#     - DOCKERHUB_TOKEN: Seu token de acesso/senha do Docker Hub (recomenda-se token)
+# 2.  Ajuste as tags no passo 'Build e Push da Imagem Docker' conforme sua estratégia de versionamento.
+#     - O exemplo inclui tags 'latest', com o nome do branch, com 'v' + branch e tags versionadas (v*.*.*).
+#     - Remova ou adicione tags conforme necessário.
+# 3.  Este workflow assume que você tem um Dockerfile na raiz do seu repositório.
+# 4.  Valide se o nome da imagem 'chaos4455/projetojumpad' está correto para seu usuário/organização no Docker Hub.
+# 5.  Após o push bem-sucedido, a imagem estará disponível no seu repositório Docker Hub.
